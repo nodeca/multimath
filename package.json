@@ -1,0 +1,30 @@
+{
+  "name": "multimath",
+  "description": "Fast image math core in webassembly & js",
+  "version": "1.0.0",
+  "keywords": [
+    "webassembly",
+    "math",
+    "image",
+    "multimath"
+  ],
+  "license": "MIT",
+  "repository": "nodeca/multimath",
+  "scripts": {
+    "test": "make test"
+  },
+  "files": [
+    "dist/",
+    "lib/",
+    "index.js"
+  ],
+  "dependencies": {
+    "glur": "^1.1.2",
+    "object-assign": "^4.1.1"
+  },
+  "devDependencies": {
+    "benchmark": "^2.1.0",
+    "eslint": "^3.7.0",
+    "mocha": "^3.1.0"
+  }
+}

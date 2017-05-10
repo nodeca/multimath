@@ -14,6 +14,7 @@ test: lint
 
 wasm:
 	MODULE=hsl_l16 $(MAKE) wasm_module_llvm
+	MODULE=unsharp_mask $(MAKE) wasm_module_llvm
 
 wasm_module:
 	emcc ./lib/$(MODULE)/$(MODULE).c -v -g3 -O3 -s WASM=1 -s SIDE_MODULE=1 -s "BINARYEN_TRAP_MODE='allow'" -o ./lib/$(MODULE)/$(MODULE).wasm

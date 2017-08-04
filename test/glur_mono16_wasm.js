@@ -29,7 +29,11 @@ module.exports = function glur16(thisobj, src, width, height, radius) {
   var line_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt;
   var coeffs_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt;
 
-  var instance = getInstance(thisobj, 'unsharp_mask', src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt + coeffs_byte_cnt);
+  var instance = getInstance(
+    thisobj,
+    'unsharp_mask',
+    src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt + coeffs_byte_cnt
+  );
 
   var mem32 = new Uint16Array(thisobj.__memory.buffer);
   mem32.set(src);
@@ -39,4 +43,4 @@ module.exports = function glur16(thisobj, src, width, height, radius) {
   fn(out_offset, tmp_offset, line_offset, coeffs_offset, width, height, radius);
 
   return new Uint16Array(thisobj.__memory.buffer.slice(out_offset, out_offset + out_byte_cnt));
-}
+};

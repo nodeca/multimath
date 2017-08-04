@@ -16,7 +16,7 @@ function createFixture(width, height) {
 function compareArrays(arr1, arr2, maxdiff) {
   var diff = 0;
 
-  if (arr1.length != arr2.length) {
+  if (arr1.length !== arr2.length) {
     assert.fail('Array compare failed');
   }
 
@@ -44,8 +44,7 @@ function createFixtureGlur(width, height) {
   for (let i = 0; i < width * height; i++) {
     if (i % 2) {
       result[i] = 0;
-    }
-    else {
+    } else {
       result[i] = 255;
     }
   }
@@ -98,9 +97,9 @@ describe('unsharp_mask', function () {
       mlib_js.unsharp_mask(fixture_js, 100, 100, 80, 2, 2);
 
       let fixture_wasm = createFixture(100, 100);
-      var masked = mlib_wasm.unsharp_mask(fixture_wasm, 100, 100, 80, 2, 2);
+      mlib_wasm.unsharp_mask(fixture_wasm, 100, 100, 80, 2, 2);
 
-      compareArrays(fixture_js, masked, 1);
+      compareArrays(fixture_js, fixture_wasm, 1);
     });
   });
 });

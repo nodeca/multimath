@@ -13,21 +13,6 @@ function createFixture(width, height) {
   return result;
 }
 
-function compareArrays(arr1, arr2, maxdiff) {
-  var diff = 0;
-
-  if (arr1.length !== arr2.length) {
-    assert.fail('Array compare failed');
-  }
-
-  for (let i = 0; i < arr1.length; i++) {
-    diff = Math.abs(arr1[i] - arr2[i]);
-    if (diff > maxdiff) {
-      assert.fail('Array compare failed');
-    }
-  }
-}
-
 function createFixtureConst(width, height, number) {
   const result = new Uint16Array(width * height);
 
@@ -75,7 +60,7 @@ describe('glur_mono16', function () {
       var fixture = createFixtureGlur(100, 100);
       var blur_wasm = glur_wasm(mlib_wasm, fixture, 100, 100, 2);
 
-      compareArrays(fixturejs, blur_wasm, 1);
+      assert.deepEqual(fixturejs, blur_wasm);
     });
   });
 });
@@ -99,7 +84,7 @@ describe('unsharp_mask', function () {
       let fixture_wasm = createFixture(100, 100);
       mlib_wasm.unsharp_mask(fixture_wasm, 100, 100, 80, 2, 2);
 
-      compareArrays(fixture_js, fixture_wasm, 1);
+      assert.deepEqual(fixture_js, fixture_wasm);
     });
   });
 });

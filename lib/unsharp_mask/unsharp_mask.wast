@@ -3,6 +3,9 @@
  (import "env" "exp" (func $exp (param f64) (result f64)))
  (import "env" "memory" (memory $0 1))
  (table 0 anyfunc)
+ (export "stackSave" (func $stackSave))
+ (export "stackAlloc" (func $stackAlloc))
+ (export "stackRestore" (func $stackRestore))
  (export "hsl_l16" (func $hsl_l16))
  (export "convolveMono16" (func $convolveMono16))
  (export "blurMono16" (func $blurMono16))
@@ -759,19 +762,19 @@
   )
  )
  (func $convolveMono16 (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32) (param $5 i32)
-  (local $6 f32)
-  (local $7 f32)
-  (local $8 f32)
-  (local $9 f32)
-  (local $10 f32)
-  (local $11 f32)
-  (local $12 f32)
-  (local $13 f32)
-  (local $14 i32)
+  (local $6 f64)
+  (local $7 f64)
+  (local $8 f64)
+  (local $9 f64)
+  (local $10 f64)
+  (local $11 i32)
+  (local $12 f64)
+  (local $13 f64)
+  (local $14 f64)
   (local $15 i32)
   (local $16 i32)
   (local $17 i32)
-  (local $18 f32)
+  (local $18 f64)
   (local $19 i32)
   (local $20 i32)
   (local $21 i32)
@@ -779,8 +782,8 @@
   (local $23 i32)
   (local $24 i32)
   (local $25 i32)
-  (local $26 f32)
-  (local $27 f32)
+  (local $26 f64)
+  (local $27 f64)
   (local $28 i32)
   (local $29 i32)
   (local $30 i32)
@@ -803,7 +806,7 @@
    (i32.add
     (get_local $2)
     (i32.shl
-     (tee_local $14
+     (tee_local $11
       (i32.add
        (get_local $4)
        (i32.const -1)
@@ -817,7 +820,7 @@
    (i32.add
     (get_local $0)
     (i32.shl
-     (get_local $14)
+     (get_local $11)
      (i32.const 1)
     )
    )
@@ -827,51 +830,67 @@
     (get_local $1)
     (i32.shl
      (i32.mul
-      (get_local $14)
+      (get_local $11)
       (get_local $5)
      )
      (i32.const 1)
     )
    )
   )
+  (set_local $14
+   (f64.promote/f32
+    (f32.load offset=12
+     (get_local $3)
+    )
+   )
+  )
   (set_local $13
-   (f32.load offset=28
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load offset=8
+     (get_local $3)
+    )
    )
   )
   (set_local $12
-   (f32.load offset=24
-    (get_local $3)
-   )
-  )
-  (set_local $11
-   (f32.load offset=20
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load offset=28
+     (get_local $3)
+    )
    )
   )
   (set_local $10
-   (f32.load offset=16
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load offset=20
+     (get_local $3)
+    )
    )
   )
   (set_local $9
-   (f32.load offset=12
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load offset=16
+     (get_local $3)
+    )
    )
   )
   (set_local $8
-   (f32.load offset=8
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load offset=4
+     (get_local $3)
+    )
    )
   )
   (set_local $7
-   (f32.load offset=4
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load
+     (get_local $3)
+    )
    )
   )
   (set_local $6
-   (f32.load
-    (get_local $3)
+   (f64.promote/f32
+    (f32.load offset=24
+     (get_local $3)
+    )
    )
   )
   (set_local $22
@@ -902,9 +921,9 @@
     )
     (set_local $27
      (tee_local $26
-      (f32.mul
-       (get_local $12)
-       (f32.convert_u/i32
+      (f64.mul
+       (get_local $6)
+       (f64.convert_u/i32
         (tee_local $28
          (i32.load16_u
           (i32.add
@@ -935,33 +954,35 @@
       )
       (f32.store
        (get_local $1)
-       (tee_local $26
-        (f32.add
-         (f32.mul
-          (get_local $11)
-          (get_local $27)
-         )
-         (f32.add
-          (f32.mul
+       (f32.demote/f64
+        (tee_local $26
+         (f64.add
+          (f64.mul
            (get_local $10)
-           (get_local $18)
+           (get_local $27)
           )
-          (f32.add
-           (f32.mul
-            (get_local $7)
-            (f32.convert_u/i32
-             (i32.and
-              (get_local $28)
-              (i32.const 65535)
+          (f64.add
+           (f64.mul
+            (get_local $9)
+            (get_local $18)
+           )
+           (f64.add
+            (f64.mul
+             (get_local $8)
+             (f64.convert_u/i32
+              (i32.and
+               (get_local $28)
+               (i32.const 65535)
+              )
              )
             )
-           )
-           (f32.mul
-            (get_local $6)
-            (f32.convert_u/i32
-             (tee_local $28
-              (i32.load16_u
-               (get_local $25)
+            (f64.mul
+             (get_local $7)
+             (f64.convert_u/i32
+              (tee_local $28
+               (i32.load16_u
+                (get_local $25)
+               )
               )
              )
             )
@@ -1025,16 +1046,16 @@
     )
     (set_local $27
      (tee_local $26
-      (f32.mul
-       (get_local $13)
-       (f32.convert_u/i32
+      (f64.mul
+       (get_local $12)
+       (f64.convert_u/i32
         (get_local $29)
        )
       )
      )
     )
     (set_local $3
-     (get_local $14)
+     (get_local $11)
     )
     (block $label$4
      (loop $label$5
@@ -1054,32 +1075,32 @@
       )
       (i32.store16
        (get_local $25)
-       (i32.trunc_u/f32
-        (f32.add
+       (i32.trunc_u/f64
+        (f64.add
          (tee_local $26
-          (f32.add
-           (f32.mul
-            (get_local $11)
+          (f64.add
+           (f64.mul
+            (get_local $10)
             (get_local $27)
            )
-           (f32.add
-            (f32.mul
-             (get_local $10)
+           (f64.add
+            (f64.mul
+             (get_local $9)
              (get_local $18)
             )
-            (f32.add
-             (f32.mul
-              (get_local $9)
-              (f32.convert_u/i32
+            (f64.add
+             (f64.mul
+              (get_local $14)
+              (f64.convert_u/i32
                (i32.and
                 (get_local $29)
                 (i32.const 65535)
                )
               )
              )
-             (f32.mul
-              (get_local $8)
-              (f32.convert_u/i32
+             (f64.mul
+              (get_local $13)
+              (f64.convert_u/i32
                (i32.and
                 (get_local $30)
                 (i32.const 65535)
@@ -1090,8 +1111,10 @@
            )
           )
          )
-         (f32.load
-          (get_local $1)
+         (f64.promote/f32
+          (f32.load
+           (get_local $1)
+          )
          )
         )
        )
@@ -2042,6 +2065,36 @@
     )
     (br $label$1)
    )
+  )
+ )
+ (func $stackSave (result i32)
+  (i32.load offset=4
+   (i32.const 0)
+  )
+ )
+ (func $stackAlloc (param $0 i32) (result i32)
+  (local $1 i32)
+  (set_local $1
+   (i32.load offset=4
+    (i32.const 0)
+   )
+  )
+  (i32.store offset=4
+   (i32.const 0)
+   (i32.and
+    (i32.sub
+     (get_local $1)
+     (get_local $0)
+    )
+    (i32.const -16)
+   )
+  )
+  (get_local $1)
+ )
+ (func $stackRestore (param $0 i32)
+  (i32.store offset=4
+   (i32.const 0)
+   (get_local $0)
   )
  )
 )

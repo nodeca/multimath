@@ -72,9 +72,9 @@ void convolveMono16(uint16_t* src, uint16_t* out, float* line,
     float right_corner = ACCESS_RIGHT_CORNER(coefs);
     uint16_t prev_src = 0;
     uint16_t curr_src = 0;
-    float curr_out = 0.0;
-    float prev_out = 0.0;
-    float prev_prev_out = 0.0;
+    double curr_out = 0.0;
+    double prev_out = 0.0;
+    double prev_prev_out = 0.0;
     uint32_t src_index = 0;
     uint32_t out_index = 0;
     uint32_t line_index = 0;
@@ -88,13 +88,13 @@ void convolveMono16(uint16_t* src, uint16_t* out, float* line,
 
         // left to right
         prev_src = src[src_index];
-        prev_prev_out = prev_src * left_corner;
+        prev_prev_out = (double)prev_src * left_corner;
         prev_out = prev_prev_out;
 
         for (j = 0; j < width; ++j) {
             curr_src = src[src_index];
 
-            curr_out = curr_src * a0 + prev_src * a1 +
+            curr_out = (double)curr_src * a0 + (double)prev_src * a1 +
                        prev_out * b1 + prev_prev_out * b2;
 
             prev_prev_out = prev_out;
@@ -112,12 +112,12 @@ void convolveMono16(uint16_t* src, uint16_t* out, float* line,
 
         // right to left
         prev_src = src[src_index];
-        prev_prev_out = prev_src * right_corner;
+        prev_prev_out = (double)prev_src * right_corner;
         prev_out = prev_prev_out;
         curr_src = prev_src;
 
         for (j = width - 1; j >= 0; --j) {
-            curr_out = curr_src * a2 + prev_src * a3 +
+            curr_out = (double)curr_src * a2 + (double)prev_src * a3 +
                        prev_out * b1 + prev_prev_out * b2;
 
             prev_prev_out = prev_out;

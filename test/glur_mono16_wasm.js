@@ -24,6 +24,7 @@ module.exports = function glur16(thisobj, src, width, height, radius) {
   var tmp_byte_cnt = elem_cnt * 2;
   var line_byte_cnt = Math.max(width, height) * 4; // float32 array
   var coeffs_byte_cnt = 8 * 4;
+  var src_offset = 0;
   var out_offset = src_byte_cnt;
   var tmp_offset = src_byte_cnt + out_byte_cnt;
   var line_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt;
@@ -40,7 +41,7 @@ module.exports = function glur16(thisobj, src, width, height, radius) {
 
   var fn = instance.exports.blurMono16 || instance.exports._blurMono16;
 
-  fn(out_offset, tmp_offset, line_offset, coeffs_offset, width, height, radius);
+  fn(src_offset, out_offset, tmp_offset, line_offset, coeffs_offset, width, height, radius);
 
   return new Uint16Array(thisobj.__memory.buffer.slice(out_offset, out_offset + out_byte_cnt));
 };

@@ -21,12 +21,12 @@
             ((r >= g && r >= b) ? r : (g >= b && g >= r) ? g : b) + \
                 ((r <= g && r <= b) ? r : (g <= b && g <= r) ? g : b)) * 257) >> 1);
 
-void hsl_l16(uint32_t width, uint32_t height) {
+void hsl_l16(uint32_t offset_src, uint32_t offset_dst, uint32_t width, uint32_t height) {
     uint8_t* memory = 0;
     uint32_t size = width * height;
     uint32_t limit = size - 3;
-    uint32_t* src = (uint32_t*)memory;
-    uint16_t* dst = (uint16_t*)memory;
+    uint32_t* src = (uint32_t*)(memory + offset_src);
+    uint16_t* dst = (uint16_t*)(memory + offset_dst);
     uint32_t rgba = 0;
     uint32_t rgba1 = 0;
     uint32_t rgba2 = 0;
@@ -135,15 +135,15 @@ void convolveMono16(uint16_t* src, uint16_t* out, float* line,
     }
 }
 
-void blurMono16(uint32_t offset_out, uint32_t offset_tmp_out, uint32_t offset_line,
+void blurMono16(uint32_t offset_src, uint32_t offset_out, uint32_t offset_tmp_out, uint32_t offset_line,
               uint32_t offset_coefs, uint32_t width, uint32_t heigth, float radius) {
     uint8_t* memory = 0;
     double a = 0.0;
     double g1 = 0.0;
     double g2 = 0.0;
     double k = 0.0;
-    uint16_t* src32 = (uint16_t*)memory;
-    uint16_t* out32 = (uint16_t*)(memory + offset_out);
+    uint16_t* src = (uint16_t*)(memory + offset_src);
+    uint16_t* out = (uint16_t*)(memory + offset_out);
     uint16_t* tmp_out = (uint16_t*)(memory + offset_tmp_out);
     float* tmp_line = (float*)(memory + offset_line);
     float* coefs = (float*)(memory + offset_coefs);
@@ -188,11 +188,11 @@ void blurMono16(uint32_t offset_out, uint32_t offset_tmp_out, uint32_t offset_li
     ACCESS_LEFT_CORNER(coefs) = left_corner;
     ACCESS_RIGHT_CORNER(coefs) = right_corner;
 
-    convolveMono16(src32, tmp_out, tmp_line, coefs, width, heigth);
-    convolveMono16(tmp_out, out32, tmp_line, coefs, heigth, width);
+    convolveMono16(src, tmp_out, tmp_line, coefs, width, heigth);
+    convolveMono16(tmp_out, out, tmp_line, coefs, heigth, width);
 }
 
-void unsharp(uint32_t lightness_offset, uint32_t blur_offset,
+void unsharp(uint32_t img_offset, uint32_t dst_offset, uint32_t lightness_offset, uint32_t blur_offset,
              uint32_t width, uint32_t height, uint32_t amount, uint32_t threshold) {
     uint8_t* memory = 0;
     uint8_t r = 0;
@@ -213,8 +213,8 @@ void unsharp(uint32_t lightness_offset, uint32_t blur_offset,
     uint32_t thresholdFp = (threshold * 257);
     uint32_t size = width * height;
     uint32_t i = 0;
-    uint8_t* img = memory;
-    uint8_t* dst = memory;
+    uint8_t* img = memory + img_offset;
+    uint8_t* dst = memory + dst_offset;
     uint16_t* lightness = (uint16_t*)(memory + lightness_offset);
     uint16_t* blured = (uint16_t*)(memory + blur_offset);
 

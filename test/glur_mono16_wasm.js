@@ -1,21 +1,5 @@
 'use strict';
 
-function getInstance(thisobj, name, memsize) {
-  if (memsize) thisobj.__reallocate(memsize);
-
-  if (!thisobj.__cache[name]) {
-    thisobj.__cache[name] = new WebAssembly.Instance(thisobj.__wasm[name], {
-      env: {
-        memoryBase: 0,
-        memory: thisobj.__memory,
-        tableBase: 0,
-        table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' }),
-        exp: Math.exp
-      }
-    });
-  }
-  return thisobj.__cache[name];
-}
 
 module.exports = function glur16(thisobj, src, width, height, radius) {
   var elem_cnt = width * height;
@@ -30,10 +14,10 @@ module.exports = function glur16(thisobj, src, width, height, radius) {
   var line_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt;
   var coeffs_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt;
 
-  var instance = getInstance(
-    thisobj,
+  var instance = thisobj.__instance(
     'unsharp_mask',
-    src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt + coeffs_byte_cnt
+    src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt + coeffs_byte_cnt,
+    { exp: Math.exp }
   );
 
   var mem32 = new Uint16Array(thisobj.__memory.buffer);

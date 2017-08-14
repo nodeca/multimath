@@ -132,19 +132,22 @@ MultiMath.prototype.__reallocate = function mem_grow_to(bytes) {
 };
 
 
-MultiMath.prototype.__instance = function instance(name, memsize) {
+MultiMath.prototype.__instance = function instance(name, memsize, env_extra) {
   if (memsize) this.__reallocate(memsize);
 
   if (!this.__cache[name]) {
+    var env_base = {
+      memoryBase: 0,
+      memory: this.__memory,
+      tableBase: 0,
+      table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
+    };
+
     this.__cache[name] = new WebAssembly.Instance(this.__wasm[name], {
-      env: {
-        memoryBase: 0,
-        memory: this.__memory,
-        tableBase: 0,
-        table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
-      }
+      env: Object.assign(env_base, env_extra || {})
     });
   }
+
   return this.__cache[name];
 };
 

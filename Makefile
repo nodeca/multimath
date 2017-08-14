@@ -13,7 +13,6 @@ test: lint
 
 
 wasm:
-	MODULE=hsl_l16 $(MAKE) wasm_module_llvm
 	MODULE=unsharp_mask $(MAKE) wasm_module_llvm
 
 wasm_module:

@@ -10,12 +10,10 @@ var multimath_raw = require('../');
 
 
 var mm_js = multimath_raw({ js: true, wasm: false })
-  .use(require('../lib/hsl_l16'))
   .use(require('../lib/unsharp_mask'));
 
 
 var mm_wasm = multimath_raw({ js: false, wasm: true })
-  .use(require('../lib/hsl_l16'))
   .use(require('../lib/unsharp_mask'));
 
 
@@ -33,27 +31,9 @@ suite.add('Init with webassembly modules', {
   defer: true,
   fn: function (defer) {
     multimath_raw({ js: false, wasm: true })
-      .use(require('../lib/hsl_l16'))
+      .use(require('../lib/unsharp_mask'))
       .init()
       .then(function () {
-        defer.resolve();
-      });
-  }
-});
-
-suite.add('hsl_l16 js', {
-  fn: function () {
-    mm_js.hsl_l16(sample.buffer, sample.width, sample.height);
-  }
-});
-
-suite.add('hsl_l16 wasm', {
-  defer: true,
-  fn: function (defer) {
-    mm_wasm
-      .init()
-      .then(function () {
-        mm_wasm.hsl_l16(sample.buffer, sample.width, sample.height);
         defer.resolve();
       });
   }
@@ -86,7 +66,7 @@ suite.add('unsharp_mask js', {
   }
 });
 
-/*suite.add('unsharp_mask wasm', {
+suite.add('unsharp_mask wasm', {
   defer: true,
   fn: function (defer) {
     mm_wasm
@@ -96,7 +76,7 @@ suite.add('unsharp_mask js', {
         defer.resolve();
       });
   }
-});*/
+});
 
 suite.on('cycle', function (event) {
   console.log('> ' + event.target);

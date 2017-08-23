@@ -33,8 +33,14 @@ function MultiMath(options) {
 
 MultiMath.prototype.use = function (module) {
   this.__modules[module.name] = module;
-  // Pin JS implementation by default
-  this[module.name] = module.fn;
+
+  // Pin the best possible implementation
+  if (!this.has_wasm || !this.options.wasm || !module.wasm_fn) {
+    this[module.name] = module.fn;
+  } else {
+    this[module.name] = module.wasm_fn;
+  }
+
   return this;
 };
 
@@ -135,6 +141,12 @@ MultiMath.prototype.__reallocate = function mem_grow_to(bytes) {
 MultiMath.prototype.__instance = function instance(name, memsize, env_extra) {
   if (memsize) this.__reallocate(memsize);
 
+  // If .init() was not called, do sync compile
+  if (!this.__wasm[name]) {
+    var module = this.__modules[name];
+    this.__wasm[name] = new WebAssembly.Module(this.__base64decode(module.wasm_src));
+  }
+
   if (!this.__cache[name]) {
     var env_base = {
       memoryBase: 0,
@@ -144,7 +156,7 @@ MultiMath.prototype.__instance = function instance(name, memsize, env_extra) {
     };
 
     this.__cache[name] = new WebAssembly.Instance(this.__wasm[name], {
-      env: Object.assign(env_base, env_extra || {})
+      env: assign(env_base, env_extra || {})
     });
   }
 

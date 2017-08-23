@@ -34,6 +34,11 @@ const mm = require('multimath')()
              .use(require('multimath/lib/unsharp_mask'))
              .use(require('your_custom_module'))
 
+// Simple sync call. Will use sync wasm compile. Ok for webworkers.
+// Can freeze interface at first call if wasm source is too big.
+mm.unsharp_mask(rgba_buffer, width, height);
+
+// Async init, compile all modules at once in async way.
 mm.init().then(() => {
   mm.unsharp_mask(rgba_buffer, width, height);
 });
@@ -74,6 +79,19 @@ Register new module, format is:
 ```
 
 See example implementations in `lib/` folder.
+
+
+### .init() -> Promise
+
+Optional. Compile all wasm modules in async way. May be useful if your wasm
+modules are big and you should not freeze interface on first call.
+
+
+### .<your_method>
+
+All modules, loaded via `.use()`, pin their methods to current `Multimath`
+instance. The best implementation will be selected automatically (depends on
+browser features and constructor options);
 
 
 Licence

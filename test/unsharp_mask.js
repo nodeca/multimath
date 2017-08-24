@@ -38,30 +38,28 @@ describe('unsharp_mask', function () {
 
       fill(sample, [ 255, 180, 55, 0 ]);   // r, g, b, a
 
-      return mlib_wasm.init().then(() => {
-        let result_js   = require('../lib/unsharp_mask/hsl_l16')(sample, width, height);
+      let result_js   = require('../lib/unsharp_mask/hsl_l16')(sample, width, height);
 
-        // Invoke wasm implementation manually
-        let pixels     = width * height;
-        let res_offset = pixels * 4;
+      // Invoke wasm implementation manually
+      let pixels     = width * height;
+      let res_offset = pixels * 4;
 
-        let instance = mlib_wasm.__instance(
-          'unsharp_mask',
-          pixels * 4 + pixels * 2,
-          { exp: Math.exp }
-        );
+      let instance = mlib_wasm.__instance(
+        'unsharp_mask',
+        pixels * 4 + pixels * 2,
+        { exp: Math.exp }
+      );
 
-        let mem = new Uint8Array(mlib_wasm.__memory.buffer);
-        mem.set(sample);
+      let mem = new Uint8Array(mlib_wasm.__memory.buffer);
+      mem.set(sample);
 
-        let fn = instance.exports.hsl_l16 || instance.exports._hsl_l16;
+      let fn = instance.exports.hsl_l16 || instance.exports._hsl_l16;
 
-        fn(0, res_offset, width, height);
+      fn(0, res_offset, width, height);
 
-        let result_wasm = new Uint16Array(mlib_wasm.__memory.buffer.slice(res_offset, res_offset + pixels * 2));
+      let result_wasm = new Uint16Array(mlib_wasm.__memory.buffer.slice(res_offset, res_offset + pixels * 2));
 
-        assert.deepEqual(result_wasm, result_js);
-      });
+      assert.deepEqual(result_wasm, result_js);
     });
   });
 
@@ -119,18 +117,16 @@ describe('unsharp_mask', function () {
       }
 
 
-      return mlib_wasm.init().then(() => {
-        let sample = new Uint16Array(100 * 100);
-        fill(sample, [ 0, 255 ]);
+      let sample = new Uint16Array(100 * 100);
+      fill(sample, [ 0, 255 ]);
 
-        let sample_js   = sample.slice(0, sample.length);
+      let sample_js   = sample.slice(0, sample.length);
 
-        glur_js(sample_js, 100, 100, 2);
+      glur_js(sample_js, 100, 100, 2);
 
-        let sample_wasm = glur16_wasm_invoke(mlib_wasm, sample, 100, 100, 2);
+      let sample_wasm = glur16_wasm_invoke(mlib_wasm, sample, 100, 100, 2);
 
-        assert.deepEqual(sample_js, sample_wasm);
-      });
+      assert.deepEqual(sample_js, sample_wasm);
     });
   });
 
@@ -158,15 +154,13 @@ describe('unsharp_mask', function () {
       const mlib_js = mathlib_raw({ wasm: false }).use(require('../lib/unsharp_mask'));
       const mlib_wasm = mathlib_raw({ js: false }).use(require('../lib/unsharp_mask'));
 
-      return mlib_wasm.init().then(function () {
-        let sample_js   = createSample(100, 100);
-        let sample_wasm = createSample(100, 100);
+      let sample_js   = createSample(100, 100);
+      let sample_wasm = createSample(100, 100);
 
-        mlib_js.unsharp_mask(sample_js, 100, 100, 80, 2, 2);
-        mlib_wasm.unsharp_mask(sample_wasm, 100, 100, 80, 2, 2);
+      mlib_js.unsharp_mask(sample_js, 100, 100, 80, 2, 2);
+      mlib_wasm.unsharp_mask(sample_wasm, 100, 100, 80, 2, 2);
 
-        assert.deepEqual(sample_js, sample_wasm);
-      });
+      assert.deepEqual(sample_js, sample_wasm);
     });
   });
 });

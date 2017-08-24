@@ -67,14 +67,8 @@ suite.add('unsharp_mask js', {
 });
 
 suite.add('unsharp_mask wasm', {
-  defer: true,
-  fn: function (defer) {
-    mm_wasm
-      .init()
-      .then(function () {
-        mm_wasm.unsharp_mask(sample.buffer, sample.width, sample.height, 80, 0.6, 2);
-        defer.resolve();
-      });
+  fn: function () {
+    mm_wasm.unsharp_mask(sample.buffer, sample.width, sample.height, 80, 0.6, 2);
   }
 });
 

@@ -88,21 +88,25 @@ describe('unsharp_mask', function () {
       // unsharp_mask wasm module does not provide API for direct glur16 call
       // Here is simple wrapper for testing
       function glur16_wasm_invoke(thisobj, src, width, height, radius) {
-        var elem_cnt = width * height;
-        var src_byte_cnt = elem_cnt * 2;
-        var out_byte_cnt = elem_cnt * 2;
-        var tmp_byte_cnt = elem_cnt * 2;
+        // src = grayscale, 16 bits
+        var pixels = width * height;
+
+        var src_byte_cnt = pixels * 2;
+        var out_byte_cnt = pixels * 2;
+        var tmp_byte_cnt = pixels * 2;
+
         var line_byte_cnt = Math.max(width, height) * 4; // float32 array
         var coeffs_byte_cnt = 8 * 4;
+
         var src_offset = 0;
-        var out_offset = src_byte_cnt;
-        var tmp_offset = src_byte_cnt + out_byte_cnt;
-        var line_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt;
-        var coeffs_offset = src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt;
+        var out_offset = src_offset + src_byte_cnt;
+        var tmp_offset = out_offset + out_byte_cnt;
+        var line_offset = tmp_offset + tmp_byte_cnt;
+        var coeffs_offset = line_offset + line_byte_cnt;
 
         var instance = thisobj.__instance(
           'unsharp_mask',
-          src_byte_cnt + out_byte_cnt + tmp_byte_cnt + line_byte_cnt + coeffs_byte_cnt,
+          coeffs_offset + coeffs_byte_cnt,
           { exp: Math.exp }
         );
 

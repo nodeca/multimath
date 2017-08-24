@@ -59,18 +59,12 @@ MultiMath.prototype.init = function () {
 
     if (!self.has_wasm || !self.options.wasm || !module.wasm_fn) return null;
 
-    // If already compiled (passed on init) - only pin function and finish
-    if (self.__wasm[name]) {
-      self[name] = module.wasm_fn;
-      return null;
-    }
+    // If already compiled - exit
+    if (self.__wasm[name]) return null;
 
     // Compile wasm source
     return WebAssembly.compile(self.__base64decode(module.wasm_src))
-      .then(function (m) {
-        self.__wasm[name] = m;
-        self[name] = module.wasm_fn;
-      });
+      .then(function (m) { self.__wasm[name] = m; });
   }))
   .then(function () { return self; });
 

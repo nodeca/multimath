@@ -3,9 +3,6 @@
  (import "env" "exp" (func $exp (param f64) (result f64)))
  (import "env" "memory" (memory $0 1))
  (table 0 anyfunc)
- (export "stackSave" (func $stackSave))
- (export "stackAlloc" (func $stackAlloc))
- (export "stackRestore" (func $stackRestore))
  (export "hsl_l16" (func $hsl_l16))
  (export "convolveMono16" (func $convolveMono16))
  (export "blurMono16" (func $blurMono16))
@@ -23,7 +20,6 @@
   (local $13 i32)
   (local $14 i32)
   (local $15 i32)
-  (local $16 i32)
   (set_local $5
    (i32.add
     (tee_local $4
@@ -35,22 +31,22 @@
     (i32.const -3)
    )
   )
-  (set_local $12
+  (set_local $11
    (i32.const 0)
   )
   (block $label$0
    (loop $label$1
     (br_if $label$0
      (i32.ge_u
-      (get_local $12)
+      (get_local $11)
       (get_local $5)
      )
     )
-    (set_local $7
+    (set_local $2
      (i32.and
-      (tee_local $15
+      (tee_local $13
        (i32.shr_u
-        (tee_local $14
+        (tee_local $15
          (i32.load
           (get_local $0)
          )
@@ -61,7 +57,7 @@
       (i32.const 255)
      )
     )
-    (set_local $3
+    (set_local $7
      (i32.load
       (i32.add
        (get_local $0)
@@ -69,7 +65,7 @@
       )
      )
     )
-    (set_local $2
+    (set_local $6
      (i32.load
       (i32.add
        (get_local $0)
@@ -77,7 +73,7 @@
       )
      )
     )
-    (set_local $16
+    (set_local $10
      (i32.load
       (i32.add
        (get_local $0)
@@ -89,17 +85,17 @@
      (block $label$3
       (br_if $label$3
        (i32.lt_u
-        (tee_local $6
+        (tee_local $3
          (i32.and
-          (get_local $14)
+          (get_local $15)
           (i32.const 255)
          )
         )
-        (tee_local $9
+        (tee_local $8
          (i32.and
-          (tee_local $8
+          (tee_local $15
            (i32.shr_u
-            (get_local $14)
+            (get_local $15)
             (i32.const 16)
            )
           )
@@ -108,31 +104,34 @@
         )
        )
       )
-      (set_local $13
-       (get_local $14)
+      (set_local $12
+       (get_local $3)
       )
       (br_if $label$2
        (i32.ge_u
-        (get_local $6)
-        (get_local $7)
+        (get_local $3)
+        (get_local $2)
        )
       )
      )
-     (set_local $13
-      (select
-       (get_local $8)
+     (set_local $12
+      (i32.and
        (select
-        (get_local $8)
         (get_local $15)
+        (select
+         (get_local $15)
+         (get_local $13)
+         (i32.lt_u
+          (get_local $2)
+          (get_local $3)
+         )
+        )
         (i32.lt_u
-         (get_local $7)
-         (get_local $6)
+         (get_local $2)
+         (get_local $8)
         )
        )
-       (i32.lt_u
-        (get_local $7)
-        (get_local $9)
-       )
+       (i32.const 255)
       )
      )
     )
@@ -140,40 +139,43 @@
      (block $label$5
       (br_if $label$5
        (i32.gt_u
-        (get_local $6)
-        (get_local $7)
+        (get_local $3)
+        (get_local $2)
        )
       )
       (br_if $label$4
        (i32.le_u
-        (get_local $6)
-        (get_local $9)
+        (get_local $3)
+        (get_local $8)
        )
       )
      )
-     (set_local $14
-      (select
-       (get_local $8)
+     (set_local $3
+      (i32.and
        (select
         (get_local $15)
-        (get_local $8)
-        (i32.ge_u
-         (get_local $6)
-         (get_local $7)
+        (select
+         (get_local $13)
+         (get_local $15)
+         (i32.ge_u
+          (get_local $3)
+          (get_local $2)
+         )
+        )
+        (i32.gt_u
+         (get_local $2)
+         (get_local $8)
         )
        )
-       (i32.gt_u
-        (get_local $7)
-        (get_local $9)
-       )
+       (i32.const 255)
       )
      )
     )
-    (set_local $7
+    (set_local $15
      (i32.and
-      (tee_local $10
+      (tee_local $14
        (i32.shr_u
-        (get_local $16)
+        (get_local $10)
         (i32.const 8)
        )
       )
@@ -184,17 +186,17 @@
      (block $label$7
       (br_if $label$7
        (i32.lt_u
-        (tee_local $6
+        (tee_local $2
          (i32.and
-          (get_local $16)
+          (get_local $10)
           (i32.const 255)
          )
         )
-        (tee_local $9
+        (tee_local $8
          (i32.and
-          (tee_local $8
+          (tee_local $10
            (i32.shr_u
-            (get_local $16)
+            (get_local $10)
             (i32.const 16)
            )
           )
@@ -203,31 +205,34 @@
         )
        )
       )
-      (set_local $15
-       (get_local $16)
+      (set_local $13
+       (get_local $2)
       )
       (br_if $label$6
        (i32.ge_u
-        (get_local $6)
-        (get_local $7)
+        (get_local $2)
+        (get_local $15)
        )
       )
      )
-     (set_local $15
-      (select
-       (get_local $8)
+     (set_local $13
+      (i32.and
        (select
-        (get_local $8)
         (get_local $10)
+        (select
+         (get_local $10)
+         (get_local $14)
+         (i32.lt_u
+          (get_local $15)
+          (get_local $2)
+         )
+        )
         (i32.lt_u
-         (get_local $7)
-         (get_local $6)
+         (get_local $15)
+         (get_local $8)
         )
        )
-       (i32.lt_u
-        (get_local $7)
-        (get_local $9)
-       )
+       (i32.const 255)
       )
      )
     )
@@ -235,67 +240,46 @@
      (block $label$9
       (br_if $label$9
        (i32.gt_u
-        (get_local $6)
-        (get_local $7)
+        (get_local $2)
+        (get_local $15)
        )
       )
       (br_if $label$8
        (i32.le_u
-        (get_local $6)
-        (get_local $9)
+        (get_local $2)
+        (get_local $8)
        )
       )
      )
-     (set_local $16
-      (select
-       (get_local $8)
+     (set_local $2
+      (i32.and
        (select
         (get_local $10)
-        (get_local $8)
-        (i32.ge_u
-         (get_local $6)
-         (get_local $7)
+        (select
+         (get_local $14)
+         (get_local $10)
+         (i32.ge_u
+          (get_local $2)
+          (get_local $15)
+         )
+        )
+        (i32.gt_u
+         (get_local $15)
+         (get_local $8)
         )
        )
-       (i32.gt_u
-        (get_local $7)
-        (get_local $9)
-       )
+       (i32.const 255)
       )
      )
     )
-    (set_local $9
+    (set_local $10
      (i32.and
-      (get_local $13)
-      (i32.const 255)
-     )
-    )
-    (set_local $13
-     (i32.and
-      (get_local $14)
-      (i32.const 255)
-     )
-    )
-    (set_local $15
-     (i32.and
-      (get_local $15)
-      (i32.const 255)
-     )
-    )
-    (set_local $14
-     (i32.and
-      (tee_local $10
+      (tee_local $9
        (i32.shr_u
-        (get_local $2)
+        (get_local $6)
         (i32.const 8)
        )
       )
-      (i32.const 255)
-     )
-    )
-    (set_local $11
-     (i32.and
-      (get_local $16)
       (i32.const 255)
      )
     )
@@ -303,17 +287,17 @@
      (block $label$11
       (br_if $label$11
        (i32.lt_u
-        (tee_local $16
+        (tee_local $15
          (i32.and
-          (get_local $2)
+          (get_local $6)
           (i32.const 255)
          )
         )
-        (tee_local $6
+        (tee_local $8
          (i32.and
-          (tee_local $7
+          (tee_local $6
            (i32.shr_u
-            (get_local $2)
+            (get_local $6)
             (i32.const 16)
            )
           )
@@ -322,116 +306,113 @@
         )
        )
       )
-      (set_local $8
-       (get_local $2)
+      (set_local $14
+       (get_local $15)
       )
       (br_if $label$10
        (i32.ge_u
-        (get_local $16)
-        (get_local $14)
+        (get_local $15)
+        (get_local $10)
        )
       )
      )
-     (set_local $8
-      (select
-       (get_local $7)
+     (set_local $14
+      (i32.and
        (select
-        (get_local $7)
-        (get_local $10)
+        (get_local $6)
+        (select
+         (get_local $6)
+         (get_local $9)
+         (i32.lt_u
+          (get_local $10)
+          (get_local $15)
+         )
+        )
         (i32.lt_u
-         (get_local $14)
-         (get_local $16)
+         (get_local $10)
+         (get_local $8)
         )
        )
-       (i32.lt_u
-        (get_local $14)
-        (get_local $6)
-       )
+       (i32.const 255)
       )
      )
     )
-    (set_local $9
+    (set_local $3
      (i32.add
+      (get_local $3)
+      (get_local $12)
+     )
+    )
+    (set_local $2
+     (i32.add
+      (get_local $2)
       (get_local $13)
-      (get_local $9)
-     )
-    )
-    (set_local $13
-     (i32.add
-      (get_local $11)
-      (get_local $15)
-     )
-    )
-    (set_local $8
-     (i32.and
-      (get_local $8)
-      (i32.const 255)
      )
     )
     (block $label$12
      (block $label$13
       (br_if $label$13
        (i32.gt_u
-        (get_local $16)
-        (get_local $14)
+        (get_local $15)
+        (get_local $10)
        )
       )
       (br_if $label$12
        (i32.le_u
-        (get_local $16)
-        (get_local $6)
+        (get_local $15)
+        (get_local $8)
        )
       )
      )
-     (set_local $2
-      (select
-       (get_local $7)
+     (set_local $15
+      (i32.and
        (select
-        (get_local $10)
-        (get_local $7)
-        (i32.ge_u
-         (get_local $16)
-         (get_local $14)
+        (get_local $6)
+        (select
+         (get_local $9)
+         (get_local $6)
+         (i32.ge_u
+          (get_local $15)
+          (get_local $10)
+         )
+        )
+        (i32.gt_u
+         (get_local $10)
+         (get_local $8)
         )
        )
-       (i32.gt_u
-        (get_local $14)
-        (get_local $6)
-       )
+       (i32.const 255)
       )
      )
     )
-    (set_local $9
+    (set_local $6
      (i32.mul
-      (get_local $9)
+      (get_local $3)
       (i32.const 257)
      )
     )
-    (set_local $13
+    (set_local $8
      (i32.mul
-      (get_local $13)
+      (get_local $2)
       (i32.const 257)
      )
     )
-    (set_local $16
+    (set_local $2
      (i32.and
-      (tee_local $15
+      (tee_local $12
        (i32.shr_u
-        (get_local $3)
+        (get_local $7)
         (i32.const 8)
        )
       )
       (i32.const 255)
      )
     )
-    (set_local $8
+    (set_local $13
      (i32.mul
       (i32.add
-       (i32.and
-        (get_local $2)
-        (i32.const 255)
-       )
-       (get_local $8)
+       (get_local $15)
+       (get_local $14)
       )
       (i32.const 257)
      )
@@ -440,17 +421,17 @@
      (block $label$15
       (br_if $label$15
        (i32.lt_u
-        (tee_local $2
+        (tee_local $3
          (i32.and
-          (get_local $3)
+          (get_local $7)
           (i32.const 255)
          )
         )
-        (tee_local $7
+        (tee_local $10
          (i32.and
-          (tee_local $14
+          (tee_local $15
            (i32.shr_u
-            (get_local $3)
+            (get_local $7)
             (i32.const 16)
            )
           )
@@ -459,43 +440,40 @@
         )
        )
       )
-      (set_local $6
+      (set_local $7
        (get_local $3)
       )
       (br_if $label$14
        (i32.ge_u
+        (get_local $3)
         (get_local $2)
-        (get_local $16)
        )
       )
      )
-     (set_local $6
-      (select
-       (get_local $14)
+     (set_local $7
+      (i32.and
        (select
-        (get_local $14)
         (get_local $15)
+        (select
+         (get_local $15)
+         (get_local $12)
+         (i32.lt_u
+          (get_local $2)
+          (get_local $3)
+         )
+        )
         (i32.lt_u
-         (get_local $16)
          (get_local $2)
+         (get_local $10)
         )
        )
-       (i32.lt_u
-        (get_local $16)
-        (get_local $7)
-       )
+       (i32.const 255)
       )
      )
     )
-    (set_local $9
+    (set_local $6
      (i32.shr_u
-      (get_local $9)
-      (i32.const 1)
-     )
-    )
-    (set_local $13
-     (i32.shr_u
-      (get_local $13)
+      (get_local $6)
       (i32.const 1)
      )
     )
@@ -505,42 +483,45 @@
       (i32.const 1)
      )
     )
-    (set_local $6
-     (i32.and
-      (get_local $6)
-      (i32.const 255)
+    (set_local $13
+     (i32.shr_u
+      (get_local $13)
+      (i32.const 1)
      )
     )
     (block $label$16
      (block $label$17
       (br_if $label$17
        (i32.gt_u
+        (get_local $3)
         (get_local $2)
-        (get_local $16)
        )
       )
       (br_if $label$16
        (i32.le_u
-        (get_local $2)
-        (get_local $7)
+        (get_local $3)
+        (get_local $10)
        )
       )
      )
      (set_local $3
-      (select
-       (get_local $14)
+      (i32.and
        (select
         (get_local $15)
-        (get_local $14)
-        (i32.ge_u
+        (select
+         (get_local $12)
+         (get_local $15)
+         (i32.ge_u
+          (get_local $3)
+          (get_local $2)
+         )
+        )
+        (i32.gt_u
          (get_local $2)
-         (get_local $16)
+         (get_local $10)
         )
        )
-       (i32.gt_u
-        (get_local $16)
-        (get_local $7)
-       )
+       (i32.const 255)
       )
      )
     )
@@ -552,21 +533,21 @@
     )
     (i32.store16
      (get_local $1)
-     (get_local $9)
+     (get_local $6)
     )
     (i32.store16
      (i32.add
       (get_local $1)
       (i32.const 2)
      )
-     (get_local $13)
+     (get_local $8)
     )
     (i32.store16
      (i32.add
       (get_local $1)
       (i32.const 4)
      )
-     (get_local $8)
+     (get_local $13)
     )
     (i32.store16
      (i32.add
@@ -576,20 +557,17 @@
      (i32.shr_u
       (i32.mul
        (i32.add
-        (i32.and
-         (get_local $3)
-         (i32.const 255)
-        )
-        (get_local $6)
+        (get_local $3)
+        (get_local $7)
        )
        (i32.const 257)
       )
       (i32.const 1)
      )
     )
-    (set_local $12
+    (set_local $11
      (i32.add
-      (get_local $12)
+      (get_local $11)
       (i32.const 4)
      )
     )
@@ -606,15 +584,15 @@
    (loop $label$19
     (br_if $label$18
      (i32.ge_u
-      (get_local $12)
+      (get_local $11)
       (get_local $4)
      )
     )
     (set_local $2
      (i32.and
-      (tee_local $8
+      (tee_local $6
        (i32.shr_u
-        (tee_local $3
+        (tee_local $15
          (i32.load
           (get_local $0)
          )
@@ -629,17 +607,17 @@
      (block $label$21
       (br_if $label$21
        (i32.lt_u
-        (tee_local $16
+        (tee_local $3
          (i32.and
-          (get_local $3)
+          (get_local $15)
           (i32.const 255)
          )
         )
-        (tee_local $7
+        (tee_local $10
          (i32.and
-          (tee_local $14
+          (tee_local $15
            (i32.shr_u
-            (get_local $3)
+            (get_local $15)
             (i32.const 16)
            )
           )
@@ -648,76 +626,76 @@
         )
        )
       )
-      (set_local $6
+      (set_local $7
        (get_local $3)
       )
       (br_if $label$20
        (i32.ge_u
-        (get_local $16)
+        (get_local $3)
         (get_local $2)
        )
       )
      )
-     (set_local $6
-      (select
-       (get_local $14)
+     (set_local $7
+      (i32.and
        (select
-        (get_local $14)
-        (get_local $8)
+        (get_local $15)
+        (select
+         (get_local $15)
+         (get_local $6)
+         (i32.lt_u
+          (get_local $2)
+          (get_local $3)
+         )
+        )
         (i32.lt_u
          (get_local $2)
-         (get_local $16)
+         (get_local $10)
         )
        )
-       (i32.lt_u
-        (get_local $2)
-        (get_local $7)
-       )
+       (i32.const 255)
       )
-     )
-    )
-    (set_local $6
-     (i32.and
-      (get_local $6)
-      (i32.const 255)
      )
     )
     (block $label$22
      (block $label$23
       (br_if $label$23
        (i32.gt_u
-        (get_local $16)
+        (get_local $3)
         (get_local $2)
        )
       )
       (br_if $label$22
        (i32.le_u
-        (get_local $16)
-        (get_local $7)
+        (get_local $3)
+        (get_local $10)
        )
       )
      )
      (set_local $3
-      (select
-       (get_local $14)
+      (i32.and
        (select
-        (get_local $8)
-        (get_local $14)
-        (i32.ge_u
-         (get_local $16)
+        (get_local $15)
+        (select
+         (get_local $6)
+         (get_local $15)
+         (i32.ge_u
+          (get_local $3)
+          (get_local $2)
+         )
+        )
+        (i32.gt_u
          (get_local $2)
+         (get_local $10)
         )
        )
-       (i32.gt_u
-        (get_local $2)
-        (get_local $7)
-       )
+       (i32.const 255)
       )
      )
     )
-    (set_local $12
+    (set_local $11
      (i32.add
-      (get_local $12)
+      (get_local $11)
       (i32.const 1)
      )
     )
@@ -732,11 +710,8 @@
      (i32.shr_u
       (i32.mul
        (i32.add
-        (i32.and
-         (get_local $3)
-         (i32.const 255)
-        )
-        (get_local $6)
+        (get_local $3)
+        (get_local $7)
        )
        (i32.const 257)
       )
@@ -950,13 +925,13 @@
         (tee_local $26
          (f64.add
           (f64.mul
-           (get_local $10)
            (get_local $27)
+           (get_local $10)
           )
           (f64.add
            (f64.mul
-            (get_local $9)
             (get_local $18)
+            (get_local $9)
            )
            (f64.add
             (f64.mul
@@ -1072,13 +1047,13 @@
          (tee_local $26
           (f64.add
            (f64.mul
-            (get_local $10)
             (get_local $27)
+            (get_local $10)
            )
            (f64.add
             (f64.mul
-             (get_local $9)
              (get_local $18)
+             (get_local $9)
             )
             (f64.add
              (f64.mul
@@ -1376,7 +1351,6 @@
   (local $15 i32)
   (local $16 i32)
   (local $17 i32)
-  (local $18 i32)
   (set_local $5
    (i32.mul
     (get_local $5)
@@ -1406,9 +1380,6 @@
      (f64.const 0.5)
     )
    )
-  )
-  (set_local $7
-   (i32.const 0)
   )
   (block $label$0
    (loop $label$1
@@ -1448,15 +1419,10 @@
        (get_local $9)
       )
      )
-     (set_local $4
+     (set_local $7
       (i32.load8_u
        (i32.add
-        (tee_local $11
-         (i32.add
-          (get_local $0)
-          (get_local $7)
-         )
-        )
+        (get_local $0)
         (i32.const 2)
        )
       )
@@ -1464,17 +1430,17 @@
      (block $label$3
       (block $label$4
        (br_if $label$4
-        (tee_local $18
+        (tee_local $17
          (i32.lt_u
           (tee_local $6
            (i32.load8_u
-            (get_local $11)
+            (get_local $0)
            )
           )
-          (tee_local $11
+          (tee_local $4
            (i32.load8_u
             (i32.add
-             (get_local $11)
+             (get_local $0)
              (i32.const 1)
             )
            )
@@ -1482,30 +1448,30 @@
          )
         )
        )
-       (set_local $15
+       (set_local $14
         (get_local $6)
        )
        (br_if $label$3
         (i32.ge_u
          (get_local $6)
-         (get_local $4)
+         (get_local $7)
         )
        )
       )
-      (set_local $15
+      (set_local $14
        (select
-        (get_local $4)
+        (get_local $7)
         (select
+         (get_local $7)
          (get_local $4)
-         (get_local $11)
          (i32.lt_u
-          (get_local $11)
           (get_local $4)
+          (get_local $7)
          )
         )
         (i32.gt_u
          (get_local $6)
-         (get_local $11)
+         (get_local $4)
         )
        )
       )
@@ -1515,42 +1481,42 @@
        (br_if $label$6
         (i32.gt_u
          (get_local $6)
-         (get_local $11)
+         (get_local $4)
         )
        )
-       (set_local $16
+       (set_local $15
         (get_local $6)
        )
        (br_if $label$5
         (i32.le_u
          (get_local $6)
-         (get_local $4)
+         (get_local $7)
         )
        )
       )
-      (set_local $16
+      (set_local $15
        (select
-        (get_local $4)
+        (get_local $7)
         (select
+         (get_local $7)
          (get_local $4)
-         (get_local $11)
          (i32.gt_u
-          (get_local $11)
           (get_local $4)
+          (get_local $7)
          )
         )
-        (get_local $18)
+        (get_local $17)
        )
       )
      )
-     (set_local $14
+     (set_local $13
       (i32.shr_u
-       (tee_local $13
+       (tee_local $12
         (i32.mul
-         (tee_local $12
+         (tee_local $11
           (i32.add
-           (get_local $16)
            (get_local $15)
+           (get_local $14)
           )
          )
          (i32.const 257)
@@ -1559,41 +1525,41 @@
        (i32.const 1)
       )
      )
-     (set_local $17
+     (set_local $16
       (i32.const 0)
      )
-     (set_local $18
+     (set_local $17
       (i32.const 0)
      )
      (block $label$7
       (br_if $label$7
        (i32.eq
+        (get_local $14)
         (get_local $15)
-        (get_local $16)
        )
       )
-      (set_local $17
+      (set_local $16
        (i32.div_s
         (i32.mul
-         (tee_local $18
+         (tee_local $17
           (i32.sub
+           (get_local $14)
            (get_local $15)
-           (get_local $16)
           )
          )
          (i32.const 4095)
         )
         (select
-         (get_local $12)
+         (get_local $11)
          (i32.sub
           (i32.sub
            (i32.const 510)
-           (get_local $15)
+           (get_local $14)
           )
-          (get_local $16)
+          (get_local $15)
          )
          (i32.lt_u
-          (get_local $13)
+          (get_local $12)
           (i32.const 65536)
          )
         )
@@ -1603,50 +1569,50 @@
        (br_if $label$8
         (i32.ne
          (get_local $6)
-         (get_local $15)
+         (get_local $14)
         )
        )
-       (set_local $18
+       (set_local $17
         (i32.div_s
          (i32.mul
           (i32.sub
-           (get_local $11)
            (get_local $4)
+           (get_local $7)
           )
           (i32.const 65535)
          )
          (i32.mul
-          (get_local $18)
+          (get_local $17)
           (i32.const 6)
          )
         )
        )
        (br $label$7)
       )
-      (set_local $18
+      (set_local $17
        (i32.add
         (i32.div_s
          (i32.mul
           (select
            (i32.sub
-            (get_local $4)
+            (get_local $7)
             (get_local $6)
            )
            (i32.sub
             (get_local $6)
-            (get_local $11)
+            (get_local $4)
            )
            (tee_local $6
             (i32.eq
-             (get_local $11)
-             (get_local $15)
+             (get_local $4)
+             (get_local $14)
             )
            )
           )
           (i32.const 65535)
          )
          (i32.mul
-          (get_local $18)
+          (get_local $17)
           (i32.const 6)
          )
         )
@@ -1658,38 +1624,34 @@
        )
       )
      )
-     (set_local $4
-      (i32.add
-       (get_local $1)
-       (get_local $7)
-      )
-     )
      (set_local $6
       (select
-       (i32.const 65535)
-       (select
-        (tee_local $6
-         (i32.add
-          (get_local $14)
-          (i32.shr_s
-           (i32.add
-            (i32.mul
-             (get_local $10)
-             (get_local $8)
+       (tee_local $6
+        (select
+         (tee_local $6
+          (i32.add
+           (get_local $13)
+           (i32.shr_s
+            (i32.add
+             (i32.mul
+              (get_local $10)
+              (get_local $8)
+             )
+             (i32.const 2048)
             )
-            (i32.const 2048)
+            (i32.const 12)
            )
-           (i32.const 12)
           )
          )
-        )
-        (i32.const 0)
-        (i32.gt_s
-         (get_local $6)
          (i32.const 0)
+         (i32.gt_s
+          (get_local $6)
+          (i32.const 0)
+         )
         )
        )
-       (i32.gt_s
+       (i32.const 65535)
+       (i32.lt_s
         (get_local $6)
         (i32.const 65535)
        )
@@ -1701,9 +1663,9 @@
         (block $label$12
          (br_if $label$12
           (i32.eqz
-           (tee_local $11
+           (tee_local $7
             (i32.and
-             (get_local $17)
+             (get_local $16)
              (i32.const 65535)
             )
            )
@@ -1715,12 +1677,12 @@
            (i32.const 32767)
           )
          )
-         (set_local $11
+         (set_local $7
           (i32.shr_u
            (i32.add
             (i32.mul
              (i32.add
-              (get_local $11)
+              (get_local $7)
               (i32.const 4096)
              )
              (get_local $6)
@@ -1732,7 +1694,7 @@
          )
          (br $label$10)
         )
-        (set_local $11
+        (set_local $7
          (tee_local $6
           (i32.shr_u
            (get_local $6)
@@ -1740,20 +1702,20 @@
           )
          )
         )
-        (set_local $10
+        (set_local $4
          (get_local $6)
         )
         (br $label$9)
        )
-       (set_local $11
+       (set_local $7
         (i32.add
-         (i32.shr_s
+         (i32.shr_u
           (i32.add
            (i32.mul
-            (get_local $11)
-            (i32.sub
-             (i32.const 65535)
+            (get_local $7)
+            (i32.xor
              (get_local $6)
+             (i32.const 65535)
             )
            )
            (i32.const 2048)
@@ -1764,13 +1726,13 @@
         )
        )
       )
-      (set_local $15
+      (set_local $10
        (i32.shr_u
-        (get_local $11)
+        (get_local $7)
         (i32.const 8)
        )
       )
-      (set_local $10
+      (set_local $4
        (tee_local $6
         (i32.shr_u
          (i32.sub
@@ -1778,7 +1740,7 @@
            (get_local $6)
            (i32.const 1)
           )
-          (get_local $11)
+          (get_local $7)
          )
          (i32.const 8)
         )
@@ -1787,10 +1749,10 @@
       (block $label$13
        (br_if $label$13
         (i32.gt_u
-         (tee_local $11
+         (tee_local $7
           (i32.and
            (i32.add
-            (get_local $18)
+            (get_local $17)
             (i32.const 21845)
            )
            (i32.const 65535)
@@ -1802,11 +1764,11 @@
        (block $label$14
         (br_if $label$14
          (i32.lt_u
-          (get_local $11)
+          (get_local $7)
           (i32.const 32767)
          )
         )
-        (set_local $10
+        (set_local $4
          (i32.add
           (i32.shr_u
            (i32.add
@@ -1814,10 +1776,10 @@
              (i32.mul
               (i32.sub
                (i32.const 43690)
-               (get_local $11)
+               (get_local $7)
               )
               (i32.sub
-               (get_local $15)
+               (get_local $10)
                (get_local $6)
               )
              )
@@ -1832,24 +1794,24 @@
         )
         (br $label$13)
        )
-       (set_local $10
-        (get_local $15)
+       (set_local $4
+        (get_local $10)
        )
        (br_if $label$13
         (i32.gt_u
-         (get_local $11)
+         (get_local $7)
          (i32.const 10921)
         )
        )
-       (set_local $10
+       (set_local $4
         (i32.add
          (i32.shr_u
           (i32.add
            (i32.mul
             (i32.mul
-             (get_local $11)
+             (get_local $7)
              (i32.sub
-              (get_local $15)
+              (get_local $10)
               (get_local $6)
              )
             )
@@ -1863,15 +1825,15 @@
         )
        )
       )
-      (set_local $11
+      (set_local $7
        (get_local $6)
       )
       (block $label$15
        (br_if $label$15
         (i32.gt_u
-         (tee_local $16
+         (tee_local $14
           (i32.and
-           (get_local $18)
+           (get_local $17)
            (i32.const 65535)
           )
          )
@@ -1881,11 +1843,11 @@
        (block $label$16
         (br_if $label$16
          (i32.lt_u
-          (get_local $16)
+          (get_local $14)
           (i32.const 32767)
          )
         )
-        (set_local $11
+        (set_local $7
          (i32.add
           (i32.shr_u
            (i32.add
@@ -1893,10 +1855,10 @@
              (i32.mul
               (i32.sub
                (i32.const 43690)
-               (get_local $16)
+               (get_local $14)
               )
               (i32.sub
-               (get_local $15)
+               (get_local $10)
                (get_local $6)
               )
              )
@@ -1911,24 +1873,24 @@
         )
         (br $label$15)
        )
-       (set_local $11
-        (get_local $15)
+       (set_local $7
+        (get_local $10)
        )
        (br_if $label$15
         (i32.gt_u
-         (get_local $16)
+         (get_local $14)
          (i32.const 10921)
         )
        )
-       (set_local $11
+       (set_local $7
         (i32.add
          (i32.shr_u
           (i32.add
            (i32.mul
             (i32.mul
-             (get_local $16)
+             (get_local $14)
              (i32.sub
-              (get_local $15)
+              (get_local $10)
               (get_local $6)
              )
             )
@@ -1944,10 +1906,10 @@
       )
       (br_if $label$9
        (i32.gt_u
-        (tee_local $16
+        (tee_local $14
          (i32.and
           (i32.add
-           (get_local $18)
+           (get_local $17)
            (i32.const 43691)
           )
           (i32.const 65535)
@@ -1959,7 +1921,7 @@
       (block $label$17
        (br_if $label$17
         (i32.lt_u
-         (get_local $16)
+         (get_local $14)
          (i32.const 32767)
         )
        )
@@ -1971,10 +1933,10 @@
             (i32.mul
              (i32.sub
               (i32.const 43690)
-              (get_local $16)
+              (get_local $14)
              )
              (i32.sub
-              (get_local $15)
+              (get_local $10)
               (get_local $6)
              )
             )
@@ -1992,12 +1954,12 @@
       (block $label$18
        (br_if $label$18
         (i32.le_u
-         (get_local $16)
+         (get_local $14)
          (i32.const 10921)
         )
        )
        (set_local $6
-        (get_local $15)
+        (get_local $10)
        )
        (br $label$9)
       )
@@ -2007,9 +1969,9 @@
          (i32.add
           (i32.mul
            (i32.mul
-            (get_local $16)
+            (get_local $14)
             (i32.sub
-             (get_local $15)
+             (get_local $10)
              (get_local $6)
             )
            )
@@ -2024,28 +1986,22 @@
       )
      )
      (i32.store8
+      (get_local $1)
       (get_local $4)
-      (get_local $10)
      )
      (i32.store8
       (i32.add
-       (get_local $4)
+       (get_local $1)
+       (i32.const 1)
+      )
+      (get_local $7)
+     )
+     (i32.store8
+      (i32.add
+       (get_local $1)
        (i32.const 2)
       )
       (get_local $6)
-     )
-     (i32.store8
-      (i32.add
-       (get_local $4)
-       (i32.const 1)
-      )
-      (get_local $11)
-     )
-    )
-    (set_local $7
-     (i32.add
-      (get_local $7)
-      (i32.const 4)
      )
     )
     (set_local $2
@@ -2066,39 +2022,20 @@
       (i32.const -1)
      )
     )
+    (set_local $0
+     (i32.add
+      (get_local $0)
+      (i32.const 4)
+     )
+    )
+    (set_local $1
+     (i32.add
+      (get_local $1)
+      (i32.const 4)
+     )
+    )
     (br $label$1)
    )
   )
  )
- (func $stackSave (result i32)
-  (i32.load offset=4
-   (i32.const 0)
-  )
- )
- (func $stackAlloc (param $0 i32) (result i32)
-  (local $1 i32)
-  (set_local $1
-   (i32.load offset=4
-    (i32.const 0)
-   )
-  )
-  (i32.store offset=4
-   (i32.const 0)
-   (i32.and
-    (i32.sub
-     (get_local $1)
-     (get_local $0)
-    )
-    (i32.const -16)
-   )
-  )
-  (get_local $1)
- )
- (func $stackRestore (param $0 i32)
-  (i32.store offset=4
-   (i32.const 0)
-   (get_local $0)
-  )
- )
 )
-;; METADATA: { "asmConsts": {},"staticBump": 12, "initializers": [] }

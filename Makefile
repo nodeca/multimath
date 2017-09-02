@@ -19,7 +19,7 @@ wasm_module:
 	emcc ./lib/$(MODULE)/$(MODULE).c -v -g3 -O3 -s WASM=1 -s SIDE_MODULE=1 -s "BINARYEN_TRAP_MODE='allow'" -o ./lib/$(MODULE)/$(MODULE).wasm
 	@# Hack - remove memory limit & reassemble
 	node ./support/wast_mem_patch.js ./lib/$(MODULE)/$(MODULE).wast
-	$(BINARYEN_ROOT)/bin/wasm-opt -O3 ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
+	$(BINARYEN_ROOT)/bin/wasm-opt ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
 	node ./support/wasm_wrap.js ./lib/$(MODULE)/$(MODULE).wasm ./lib/$(MODULE)/$(MODULE)_wasm_base64.js
 
 wasm_module_llvm:
@@ -31,7 +31,8 @@ wasm_module_llvm:
 	~/llvmwasm/bin/llc -asm-verbose=false -o ./lib/$(MODULE)/$(MODULE).s ./lib/$(MODULE)/$(MODULE).bc
 	~/llvmwasm/bin/s2wasm --import-memory ./lib/$(MODULE)/$(MODULE).s > ./lib/$(MODULE)/$(MODULE).wast
 	@## Seems nothing to optimize after clang, just use to convert wast to wasm
-	~/llvmwasm/bin/wasm-opt -O3 ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
+	~/llvmwasm/bin/wasm-opt ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
+	#~/llvmwasm/bin/wasm2asm ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
 	rm ./lib/$(MODULE)/$(MODULE).bc
 	rm ./lib/$(MODULE)/$(MODULE).s
 	node ./support/wasm_wrap.js ./lib/$(MODULE)/$(MODULE).wasm ./lib/$(MODULE)/$(MODULE)_wasm_base64.js

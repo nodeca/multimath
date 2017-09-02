@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <math.h>
+
 
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #define ACCESS_COEF(ptr, offset) *(ptr + offset)
@@ -134,6 +134,11 @@ void convolveMono16(uint16_t* src, uint16_t* out, float* line,
         }
     }
 }
+
+
+// We should use exp implementation from JS
+extern double exp();
+
 
 void blurMono16(uint32_t offset_src, uint32_t offset_out, uint32_t offset_tmp_out, uint32_t offset_line,
               uint32_t offset_coefs, uint32_t width, uint32_t heigth, float radius) {

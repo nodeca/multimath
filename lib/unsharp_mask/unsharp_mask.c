@@ -2,8 +2,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+////////////////////////////////////////////////////////////////////////////////
 
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
 #define ACCESS_COEF(ptr, offset) *(ptr + offset)
 #define ACCESS_A0(ptr) ACCESS_COEF(ptr, 0)
 #define ACCESS_A1(ptr) ACCESS_COEF(ptr, 1)
@@ -13,6 +13,136 @@
 #define ACCESS_B2(ptr) ACCESS_COEF(ptr, 5)
 #define ACCESS_LEFT_CORNER(ptr) ACCESS_COEF(ptr, 6)
 #define ACCESS_RIGHT_CORNER(ptr) ACCESS_COEF(ptr, 7)
+
+// We should use exp implementation from JS
+extern double exp();
+
+
+void __build_gaussian_coefs(float radius, float* coefs) {
+    double a = 1.6939718862199047 / radius;
+    double g1 = exp(-a);
+    double g2 = exp(-2 * a);
+    double k = (1 - g1) * (1 - g1) / (1 + 2 * a * g1 - g2);
+
+    double a0 = k;
+    double a1 = k * (a - 1) * g1;
+    double a2 = k * (a + 1) * g1;
+    double a3 = -k * g2;
+    double b1 = 2 * g1;
+    double b2 = -g2;
+    double left_corner = (a0 + a1) / (1 - b1 - b2);
+    double right_corner = (a2 + a3) / (1 - b1 - b2);
+
+    ACCESS_A0(coefs) = a0;
+    ACCESS_A1(coefs) = a1;
+    ACCESS_A2(coefs) = a2;
+    ACCESS_A3(coefs) = a3;
+    ACCESS_B1(coefs) = b1;
+    ACCESS_B2(coefs) = b2;
+    ACCESS_LEFT_CORNER(coefs) = left_corner;
+    ACCESS_RIGHT_CORNER(coefs) = right_corner;
+}
+
+
+void __gauss16_line(uint16_t* src, uint16_t* out, float* line,
+                  float* coefs, uint32_t width, uint32_t height) {
+    float a0 = ACCESS_A0(coefs);
+    float a1 = ACCESS_A1(coefs);
+    float a2 = ACCESS_A2(coefs);
+    float a3 = ACCESS_A3(coefs);
+    float b1 = ACCESS_B1(coefs);
+    float b2 = ACCESS_B2(coefs);
+    float left_corner = ACCESS_LEFT_CORNER(coefs);
+    float right_corner = ACCESS_RIGHT_CORNER(coefs);
+
+    uint16_t prev_src;
+    uint16_t curr_src;
+    float curr_out;
+    float prev_out;
+    float prev_prev_out;
+    int32_t i;
+
+    // left to right
+    prev_src = *src;
+    prev_prev_out = prev_src * left_corner;
+    prev_out = prev_prev_out;
+
+    for (i = width - 1; i >= 0; i--) {
+        curr_src = *src++;
+
+        curr_out = curr_src * a0 + prev_src * a1 +
+                   prev_out * b1 + prev_prev_out * b2;
+
+        prev_prev_out = prev_out;
+        prev_out = curr_out;
+        prev_src = curr_src;
+
+        *line = prev_out;
+        line++;
+    }
+
+    src--;
+    line--;
+    out += height * (width - 1);
+
+    // right to left
+    prev_src = *src;
+    prev_prev_out = prev_src * right_corner;
+    prev_out = prev_prev_out;
+    curr_src = prev_src;
+
+    for (i = width - 1; i >= 0; i--) {
+        curr_out = curr_src * a2 + prev_src * a3 +
+                   prev_out * b1 + prev_prev_out * b2;
+
+        prev_prev_out = prev_out;
+        prev_out = curr_out;
+
+        prev_src = curr_src;
+        curr_src = *src--;
+
+        *out = (*line--) + prev_out;
+        out -= height;
+    }
+}
+
+
+void blurMono16(uint32_t offset_src, uint32_t offset_out, uint32_t offset_tmp_out, uint32_t offset_line,
+              uint32_t offset_coefs, uint32_t width, uint32_t height, float radius) {
+    uint8_t* memory = 0;
+    uint16_t* src = (uint16_t*)(memory + offset_src);
+    uint16_t* out = (uint16_t*)(memory + offset_out);
+    uint16_t* tmp_out = (uint16_t*)(memory + offset_tmp_out);
+    float* tmp_line = (float*)(memory + offset_line);
+    float* coefs = (float*)(memory + offset_coefs);
+
+    // Quick exit on zero radius
+    if (!radius) return;
+
+    if (radius < 0.5) radius = 0.5;
+
+    __build_gaussian_coefs(radius, coefs);
+
+    int line;
+    uint16_t* src_line_offset;
+    uint16_t* out_col_offset;
+
+    // Horizontal pass + transpose image
+    for(line = 0; line < height; line++) {
+        src_line_offset = src + line * width;
+        out_col_offset = tmp_out + line;
+        __gauss16_line(src_line_offset, out_col_offset, tmp_line, coefs, width, height);
+    }
+
+    // Vertical pass (horisontal over transposed) + transpose back
+    for(line = 0; line < width; line++) {
+        src_line_offset = tmp_out + line * height;
+        out_col_offset = out + line;
+        __gauss16_line(src_line_offset, out_col_offset, tmp_line, coefs, height, width);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 #define R(x) ((uint8_t)(x))
 #define G(x) ((uint8_t)((x) >> 8))
@@ -27,15 +157,10 @@ void hsl_l16(uint32_t offset_src, uint32_t offset_dst, uint32_t width, uint32_t 
     uint32_t limit = size - 3;
     uint32_t* src = (uint32_t*)(memory + offset_src);
     uint16_t* dst = (uint16_t*)(memory + offset_dst);
-    uint32_t rgba = 0;
-    uint32_t rgba1 = 0;
-    uint32_t rgba2 = 0;
-    uint32_t rgba3 = 0;
-    uint32_t l = 0;
-    uint32_t l1 = 0;
-    uint32_t l2 = 0;
-    uint32_t l3 = 0;
-    uint32_t i = 0;
+
+    uint32_t rgba, rgba1, rgba2, rgba3;
+    uint32_t l, l1, l2, l3;
+    uint32_t i;
 
     for (; i < limit; i += 4) {
         rgba = *src++;
@@ -60,154 +185,16 @@ void hsl_l16(uint32_t offset_src, uint32_t offset_dst, uint32_t width, uint32_t 
     }
 }
 
-void convolveMono16(uint16_t* src, uint16_t* out, float* line,
-                  float* coefs, uint32_t width, uint32_t height) {
-    float a0 = ACCESS_A0(coefs);
-    float a1 = ACCESS_A1(coefs);
-    float a2 = ACCESS_A2(coefs);
-    float a3 = ACCESS_A3(coefs);
-    float b1 = ACCESS_B1(coefs);
-    float b2 = ACCESS_B2(coefs);
-    float left_corner = ACCESS_LEFT_CORNER(coefs);
-    float right_corner = ACCESS_RIGHT_CORNER(coefs);
-    uint16_t prev_src = 0;
-    uint16_t curr_src = 0;
-    double curr_out = 0.0;
-    double prev_out = 0.0;
-    double prev_prev_out = 0.0;
-    uint32_t src_index = 0;
-    uint32_t out_index = 0;
-    uint32_t line_index = 0;
-    uint32_t i = 0;
-    int j = 0;
-
-    for (i = 0; i < height; ++i) {
-        src_index = i * width;
-        out_index = i;
-        line_index = 0;
-
-        // left to right
-        prev_src = src[src_index];
-        prev_prev_out = (double)prev_src * left_corner;
-        prev_out = prev_prev_out;
-
-        for (j = 0; j < width; ++j) {
-            curr_src = src[src_index];
-
-            curr_out = (double)curr_src * a0 + (double)prev_src * a1 +
-                       prev_out * b1 + prev_prev_out * b2;
-
-            prev_prev_out = prev_out;
-            prev_out = curr_out;
-            prev_src = curr_src;
-
-            line[line_index] = prev_out;
-            line_index++;
-            src_index++;
-        }
-
-        src_index--;
-        line_index--;
-        out_index += height * (width - 1);
-
-        // right to left
-        prev_src = src[src_index];
-        prev_prev_out = (double)prev_src * right_corner;
-        prev_out = prev_prev_out;
-        curr_src = prev_src;
-
-        for (j = width - 1; j >= 0; --j) {
-            curr_out = (double)curr_src * a2 + (double)prev_src * a3 +
-                       prev_out * b1 + prev_prev_out * b2;
-
-            prev_prev_out = prev_out;
-            prev_out = curr_out;
-
-            prev_src = curr_src;
-            curr_src = src[src_index];
-
-            out[out_index] = line[line_index] + prev_out;
-
-            src_index--;
-            line_index--;
-            out_index -= height;
-        }
-    }
-}
-
-
-// We should use exp implementation from JS
-extern double exp();
-
-
-void blurMono16(uint32_t offset_src, uint32_t offset_out, uint32_t offset_tmp_out, uint32_t offset_line,
-              uint32_t offset_coefs, uint32_t width, uint32_t heigth, float radius) {
-    uint8_t* memory = 0;
-    double a = 0.0;
-    double g1 = 0.0;
-    double g2 = 0.0;
-    double k = 0.0;
-    uint16_t* src = (uint16_t*)(memory + offset_src);
-    uint16_t* out = (uint16_t*)(memory + offset_out);
-    uint16_t* tmp_out = (uint16_t*)(memory + offset_tmp_out);
-    float* tmp_line = (float*)(memory + offset_line);
-    float* coefs = (float*)(memory + offset_coefs);
-    double a0 = 0.0;
-    double a1 = 0.0;
-    double a2 = 0.0;
-    double a3 = 0.0;
-    double b1 = 0.0;
-    double b2 = 0.0;
-    double left_corner = 0.0;
-    double right_corner = 0.0;
-
-    // Quick exit on zero radius
-    if (!radius) {
-        return;
-    }
-
-    if (radius < 0.5) {
-        radius = 0.5;
-    }
-
-    a = 1.6939718862199047 / radius;
-    g1 = exp(-a);
-    g2 = exp(-2 * a);
-    k = (1 - g1) * (1 - g1) / (1 + 2 * a * g1 - g2);
-
-    a0 = k;
-    a1 = k * (a - 1) * g1;
-    a2 = k * (a + 1) * g1;
-    a3 = -k * g2;
-    b1 = 2 * g1;
-    b2 = -g2;
-    left_corner = (a0 + a1) / (1 - b1 - b2);
-    right_corner = (a2 + a3) / (1 - b1 - b2);
-
-    ACCESS_A0(coefs) = a0;
-    ACCESS_A1(coefs) = a1;
-    ACCESS_A2(coefs) = a2;
-    ACCESS_A3(coefs) = a3;
-    ACCESS_B1(coefs) = b1;
-    ACCESS_B2(coefs) = b2;
-    ACCESS_LEFT_CORNER(coefs) = left_corner;
-    ACCESS_RIGHT_CORNER(coefs) = right_corner;
-
-    convolveMono16(src, tmp_out, tmp_line, coefs, width, heigth);
-    convolveMono16(tmp_out, out, tmp_line, coefs, heigth, width);
-}
+////////////////////////////////////////////////////////////////////////////////
 
 void unsharp(uint32_t img_offset, uint32_t dst_offset, uint32_t lightness_offset, uint32_t blur_offset,
              uint32_t width, uint32_t height, uint32_t amount, uint32_t threshold) {
     uint8_t* memory = 0;
-    uint8_t r = 0;
-    uint8_t g = 0;
-    uint8_t b = 0;
+    uint8_t r, g, b;
     uint16_t h = 0;
     uint16_t s = 0;
     int32_t l = 0;
-    uint8_t min = 0;
-    uint8_t max = 0;
+    uint8_t min, max;
     uint16_t hShifted = 0;
     uint32_t m1 = 0;
     uint32_t m2 = 0;
@@ -262,7 +249,7 @@ void unsharp(uint32_t img_offset, uint32_t dst_offset, uint32_t lightness_offset
             else if (l < 0) {
                 l = 0;
             }
-      
+
             // convert HSL back to RGB
             // for information about math look above
             if (s == 0) {

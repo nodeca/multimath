@@ -158,28 +158,9 @@ void hsl_l16(uint32_t offset_src, uint32_t offset_dst, uint32_t width, uint32_t 
     uint32_t* src = (uint32_t*)(memory + offset_src);
     uint16_t* dst = (uint16_t*)(memory + offset_dst);
 
-    uint32_t rgba, rgba1, rgba2, rgba3;
-    uint32_t l, l1, l2, l3;
-    uint32_t i = 0;
+    uint32_t rgba;
 
-    for (; i < limit; i += 4) {
-        rgba = *src++;
-        rgba1 = *src++;
-        rgba2 = *src++;
-        rgba3 = *src++;
-
-        l = MinPlusMax(R(rgba), G(rgba), B(rgba));
-        l1 = MinPlusMax(R(rgba1), G(rgba1), B(rgba1));
-        l2 = MinPlusMax(R(rgba2), G(rgba2), B(rgba2));
-        l3 = MinPlusMax(R(rgba3), G(rgba3), B(rgba3));
-
-        *dst++ = l;
-        *dst++ = l1;
-        *dst++ = l2;
-        *dst++ = l3;
-    }
-
-    while (i++ < size) {
+    while (size--) {
         rgba = *src++;
         *dst++ = MinPlusMax(R(rgba), G(rgba), B(rgba));
     }

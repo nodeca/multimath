@@ -23,16 +23,11 @@ wasm_module:
 	node ./support/wasm_wrap.js ./lib/$(MODULE)/$(MODULE).wasm ./lib/$(MODULE)/$(MODULE)_wasm_base64.js
 
 wasm_module_llvm:
-	@##
-	@## LLVM seems too buggy. Use emsdk with memory patch hack now
-	@##
-	@## see DEVELOPMENT.md for install instructions
-	~/llvmwasm/bin/clang -emit-llvm --target=wasm32 -Oz -c -o ./lib/$(MODULE)/$(MODULE).bc ./lib/$(MODULE)/$(MODULE).c
+	@## run ./support/llvm_install.sh to install
+	~/llvmwasm/bin/clang -emit-llvm --target=wasm32 -O3 -c -o ./lib/$(MODULE)/$(MODULE).bc ./lib/$(MODULE)/$(MODULE).c
 	~/llvmwasm/bin/llc -asm-verbose=false -o ./lib/$(MODULE)/$(MODULE).s ./lib/$(MODULE)/$(MODULE).bc
 	~/llvmwasm/bin/s2wasm --import-memory ./lib/$(MODULE)/$(MODULE).s > ./lib/$(MODULE)/$(MODULE).wast
-	@## Seems nothing to optimize after clang, just use to convert wast to wasm
-	~/llvmwasm/bin/wasm-opt ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
-	#~/llvmwasm/bin/wasm2asm ./lib/$(MODULE)/$(MODULE).wast -o ./lib/$(MODULE)/$(MODULE).wasm
+	~/llvmwasm/bin/wasm-opt ./lib/$(MODULE)/$(MODULE).wast -O3 -o ./lib/$(MODULE)/$(MODULE).wasm
 	rm ./lib/$(MODULE)/$(MODULE).bc
 	rm ./lib/$(MODULE)/$(MODULE).s
 	node ./support/wasm_wrap.js ./lib/$(MODULE)/$(MODULE).wasm ./lib/$(MODULE)/$(MODULE)_wasm_base64.js

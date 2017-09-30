@@ -1,16 +1,15 @@
-multimath - fast image math in WebAssembly and JS
-=================================================
+multimath
+=========
 
 [![Build Status](https://travis-ci.org/nodeca/multimath.svg?branch=master)](https://travis-ci.org/nodeca/multimath)
 [![NPM version](https://img.shields.io/npm/v/multimath.svg)](https://www.npmjs.org/package/multimath)
 
-> - Core loader for webassembly/javascript math functions.
-> - Built in implementations for some math functions.
+> Core to create fast image math in WebAssembly and JS.
 
 `multimath` simplifies creation of small CPU-intensive webassembly modules
 with fallback to javascript implementations.
 
-- It cares about parallel async modules init.
+- It cares about modules init, memory management and other things.
 - Has built-in helpers to write webassembly code without additional runtimes.
 - Use shared memory to chain webassembly calls without memory copy.
 
@@ -51,16 +50,14 @@ API
 
 ### new multimath(options)
 
-Create library instance. Sugar - `multimath(options)` (without `new`).
+Create library instance. Sugar - `multimath()` (without `new`).
 
 ```js
 const mm = require('multimath')({
-  js:      true,   // For testing only, set false when should be sure
-                   // that wasm implementation used.
-  wasm:    true    // For testing only, set false when should be sure
-                   // that js implementation used.
-
-  modules: {}      // Compiled modules, for faster init in webworkers
+  // Options are not mandatory, but you can disable js or ww
+  // implementations for testing
+  js:   true,
+  wasm: true
 });
 ```
 
@@ -74,17 +71,24 @@ Register new module, format is:
   name:     String,    // default wasm module & function name to expose
   fn:       Function,  // JS implementation
   wasm_fn:  Function,  // WebAssembly glue
-  wasm_src: String     // Base64 encodes WebAssembly module
+  wasm_src: String     // Base64 encoded WebAssembly module
 }
 ```
 
-See example implementations in `lib/` folder.
+See example implementation in `lib/` folder.
 
 
 ### .init() -> Promise
 
-Optional. Compile all wasm modules in async way. May be useful if your wasm
-modules are big and you should not freeze interface on first call.
+Optional. Compile all wasm modules in async way. May be useful in this cases:
+
+1. If you have wasm module > 4K AND run multimath in the main thread (not in
+   webworker). Some browsers prohibit sync wasm creation in this case.
+2. If you have a lot of small modules and wish to init everything before run
+   in the main thread, withoutinterface freeze.
+
+Probably, you will never need to use this method. Note, 3K was file is
+initialized in ~ 3ms.
 
 
 ### .<your_method>
@@ -92,6 +96,19 @@ modules are big and you should not freeze interface on first call.
 All modules, loaded via `.use()`, pin their methods to current `Multimath`
 instance. The best implementation will be selected automatically (depends on
 browser features and constructor options);
+
+
+### Development
+
+Ways to go with your own modules:
+
+- Use `./support/llvmasm_install.sh` to install llvm/binaryen tools. Or use it
+  as base for your own.
+- See `Makefile`
+- See `./lib/unsharp_mask` as example and... of cause `./index.js`.
+
+Also, see how [pica](https://github.com/nodeca/pica)
+use this library.
 
 
 Licence

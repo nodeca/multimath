@@ -55,20 +55,20 @@ void __gauss16_line(uint16_t* src, uint16_t* out, float* line,
     float left_corner = ACCESS_LEFT_CORNER(coefs);
     float right_corner = ACCESS_RIGHT_CORNER(coefs);
 
-    uint16_t prev_src;
-    uint16_t curr_src;
-    float curr_out;
-    float prev_out;
-    float prev_prev_out;
+    double prev_src;
+    double curr_src;
+    double curr_out;
+    double prev_out;
+    double prev_prev_out;
     int32_t i;
 
     // left to right
-    prev_src = *src;
+    prev_src = (double)(*src);
     prev_prev_out = prev_src * left_corner;
     prev_out = prev_prev_out;
 
     for (i = width - 1; i >= 0; i--) {
-        curr_src = *src++;
+        curr_src = (double)(*src++);
 
         curr_out = curr_src * a0 + prev_src * a1 +
                    prev_out * b1 + prev_prev_out * b2;
@@ -86,7 +86,7 @@ void __gauss16_line(uint16_t* src, uint16_t* out, float* line,
     out += height * (width - 1);
 
     // right to left
-    prev_src = *src;
+    prev_src = (double)(*src);
     prev_prev_out = prev_src * right_corner;
     prev_out = prev_prev_out;
     curr_src = prev_src;
@@ -99,7 +99,7 @@ void __gauss16_line(uint16_t* src, uint16_t* out, float* line,
         prev_out = curr_out;
 
         prev_src = curr_src;
-        curr_src = *src--;
+        curr_src = (double)(*src--);
 
         *out = (*line--) + prev_out;
         out -= height;

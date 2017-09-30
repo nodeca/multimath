@@ -12,8 +12,8 @@ var mm_js   = mm_raw({ js: true, wasm: false }).use(mm_unsharp);
 var mm_wasm = mm_raw({ js: false, wasm: true }).use(mm_unsharp);
 
 var sample = {
-  width:  3200,
-  height: 2500
+  width:  1024,
+  height: 1024
 };
 sample.buffer    = new Uint8Array(sample.width * sample.height * 4);
 

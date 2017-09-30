@@ -6,7 +6,7 @@ export WORKDIR=~/llvmwasm
 export INSTALLDIR=$WORKDIR
 
 # "stable" branch
-LLVM_REVISION=312406
+LLVM_REVISION=314578
 # version 1.37.21
 BINARYEN_COMMIT=d621116
 

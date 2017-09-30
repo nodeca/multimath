@@ -4,7 +4,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ACCESS_COEF(ptr, offset) *(ptr + offset)
+#define ACCESS_COEF(ptr, offset) (*(ptr + offset))
 #define ACCESS_A0(ptr) ACCESS_COEF(ptr, 0)
 #define ACCESS_A1(ptr) ACCESS_COEF(ptr, 1)
 #define ACCESS_A2(ptr) ACCESS_COEF(ptr, 2)
@@ -52,22 +52,19 @@ void __gauss16_line(uint16_t* src, uint16_t* out, float* line,
     float a3 = ACCESS_A3(coefs);
     float b1 = ACCESS_B1(coefs);
     float b2 = ACCESS_B2(coefs);
-    float left_corner = ACCESS_LEFT_CORNER(coefs);
-    float right_corner = ACCESS_RIGHT_CORNER(coefs);
 
     double prev_src;
     double curr_src;
     double curr_out;
     double prev_out;
     double prev_prev_out;
-    int32_t i;
 
     // left to right
     prev_src = (double)(*src);
-    prev_prev_out = prev_src * left_corner;
+    prev_prev_out = prev_src * ACCESS_LEFT_CORNER(coefs);
     prev_out = prev_prev_out;
 
-    for (i = width - 1; i >= 0; i--) {
+    for (int32_t i = width - 1; i >= 0; i--) {
         curr_src = (double)(*src++);
 
         curr_out = curr_src * a0 + prev_src * a1 +
@@ -87,11 +84,11 @@ void __gauss16_line(uint16_t* src, uint16_t* out, float* line,
 
     // right to left
     prev_src = (double)(*src);
-    prev_prev_out = prev_src * right_corner;
+    prev_prev_out = prev_src * ACCESS_RIGHT_CORNER(coefs);
     prev_out = prev_prev_out;
     curr_src = prev_src;
 
-    for (i = width - 1; i >= 0; i--) {
+    for (int32_t i = width - 1; i >= 0; i--) {
         curr_out = curr_src * a2 + prev_src * a3 +
                    prev_out * b1 + prev_prev_out * b2;
 

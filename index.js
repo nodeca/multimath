@@ -177,9 +177,11 @@ MultiMath.prototype.__instance = function instance(name, memsize, env_extra) {
 };
 
 
-// Helper to calculate memory aligh for pointers. Probably, not needed.
+// Helper to calculate memory aligh for pointers. Webassembly does not require
+// this, but you may wish to experiment. Default base = 8;
 //
 MultiMath.prototype.__align = function align(number, base) {
+  base = base || 8;
   var reminder = number % base;
   return number + (reminder ? base - reminder : 0);
 };

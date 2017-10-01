@@ -72,8 +72,15 @@ MultiMath.prototype.init = function () {
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Methods below are for internal use from plugins
+
+
 var BASE64_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+// Simple decode base64 to typed array. Useful to load embedded webassembly
+// code. You probably don't need to call this method directly.
+//
 MultiMath.prototype.__base64decode = function base64decode(str) {
   var input = str.replace(/[\r\n=]/g, ''), // remove CR/LF & padding to simplify scan
       max   = input.length;
@@ -114,6 +121,10 @@ MultiMath.prototype.__base64decode = function base64decode(str) {
 };
 
 
+// Increase current memory to include specified number of bytes. Do nothing if
+// size is already ok. You probably don't need to call this method directly,
+// because it will be invoked from `.__instance()`.
+//
 MultiMath.prototype.__reallocate = function mem_grow_to(bytes) {
   if (!this.__memory) {
     this.__memory = new WebAssembly.Memory({
@@ -132,6 +143,14 @@ MultiMath.prototype.__reallocate = function mem_grow_to(bytes) {
 };
 
 
+// Returns instantinated webassembly item by name, with specified memory size
+// and environment.
+// - use cache if available
+// - do sync module init, if async init was not called earlier
+// - allocate memory if not enougth
+// - can export functions to webassembly via "env_extra",
+//   for example, { exp: Math.exp }
+//
 MultiMath.prototype.__instance = function instance(name, memsize, env_extra) {
   if (memsize) this.__reallocate(memsize);
 
@@ -158,6 +177,8 @@ MultiMath.prototype.__instance = function instance(name, memsize, env_extra) {
 };
 
 
+// Helper to calculate memory aligh for pointers. Probably, not needed.
+//
 MultiMath.prototype.__align = function align(number, base) {
   var reminder = number % base;
   return number + (reminder ? base - reminder : 0);

@@ -15,13 +15,15 @@ var DEFAULT_OPTIONS = {
 function MultiMath(options) {
   if (!(this instanceof MultiMath)) return new MultiMath(options);
 
-  this.options = assign({}, DEFAULT_OPTIONS, options || {});
+  var opts = assign({}, DEFAULT_OPTIONS, options || {});
+
+  this.options         = opts;
 
   this.__cache         = {};
   this.has_wasm        = hasWebAssembly();
 
   this.__init_promise  = null;
-  this.__modules       = options.modules || {};
+  this.__modules       = opts.modules || {};
   this.__memory        = null;
   this.__wasm          = {};
 

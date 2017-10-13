@@ -11,7 +11,8 @@
   "license": "MIT",
   "repository": "nodeca/multimath",
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "coverage": "nyc mocha && nyc report --reporter html"
   },
   "files": [
     "lib/",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "benchmark": "^2.1.0",
     "eslint": "^3.7.0",
-    "mocha": "^3.1.0"
+    "mocha": "^3.1.0",
+    "nyc": "^11.2.1"
   }
 }

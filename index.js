@@ -68,7 +68,7 @@ MultiMath.prototype.init = function () {
     return WebAssembly.compile(self.__base64decode(module.wasm_src))
       .then(function (m) { self.__wasm[name] = m; });
   }))
-  .then(function () { return self; });
+    .then(function () { return self; });
 
   return this.__init_promise;
 };

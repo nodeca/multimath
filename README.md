@@ -7,13 +7,13 @@ multimath
 > Core to create fast image math in WebAssembly and JS.
 
 `multimath` simplifies creation of small CPU-intensive webassembly modules
-with fallback to javascript implementations.
+with fallback to JavaScript implementations.
 
 - It cares about modules init, memory management and other things.
 - Has built-in helpers to write webassembly code without additional runtimes.
 - Use shared memory to chain webassembly calls without memory copy.
 
-Built-in functions (curently - unsharp mask) avalable as example for your
+Built-in functions (curently - unsharp mask) are available as examples for your
 extensions.
 
 

@@ -32,15 +32,6 @@ wasm_module_llvm:
 	rm ./lib/$(MODULE)/$(MODULE).s
 	node ./support/wasm_wrap.js ./lib/$(MODULE)/$(MODULE).wasm ./lib/$(MODULE)/$(MODULE)_wasm_base64.js
 
-wasm_detect:
-	~/llvmwasm/bin/clang -emit-llvm --target=wasm32 -O3 -c -o ./support/wa_detect/detect.bc ./support/wa_detect/detect.c
-	~/llvmwasm/bin/llc -asm-verbose=false -o ./support/wa_detect/detect.s ./support/wa_detect/detect.bc
-	~/llvmwasm/bin/s2wasm --import-memory ./support/wa_detect/detect.s > ./support/wa_detect/detect.wast
-	~/llvmwasm/bin/wasm-opt ./support/wa_detect/detect.wast -O3 -o ./support/wa_detect/detect.wasm
-	rm ./support/wa_detect/detect.bc
-	rm ./support/wa_detect/detect.s
-	node ./support/wasm_wrap.js ./support/wa_detect/detect.wasm ./support/wa_detect/detect_wasm_base64.js
-
 
 .PHONY: publish lint doc
 .SILENT: help lint

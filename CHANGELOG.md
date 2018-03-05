@@ -1,3 +1,10 @@
+1.0.3 / 2018-03-05
+------------------
+
+- Improve WebAssembly detection, #4. Workaround for broken WebAssembly in
+  IOS 11.2.x Safary/Chrome (Webkit).
+
+
 1.0.2 / 2017-10-13
 ------------------
 

@@ -1,7 +1,7 @@
 {
   "name": "multimath",
   "description": "Core to create fast image math in WebAssembly and JS.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "keywords": [
     "webassembly",
     "math",

@@ -92,7 +92,7 @@ suite.add('hsl_l16 wasm', {
 
 
 var glur_mono16 = require('glur/mono16');
-var grayscale_sample = new Uint8Array(sample.buffer.length / 2);
+var grayscale_sample = new Uint16Array(sample.buffer.length / 2);
 
 function glur16_wasm_invoke(src, width, height, radius) {
   // src = grayscale, 16 bits
@@ -130,7 +130,7 @@ function glur16_wasm_invoke(src, width, height, radius) {
 
 suite.add('glur_mono16 js', {
   fn: function () {
-    glur_mono16(sample.buffer, sample.width, sample.height, 1.5);
+    glur_mono16(grayscale_sample, sample.width, sample.height, 1.5);
   }
 });
 

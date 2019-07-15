@@ -1,9 +1,9 @@
-2.0.0 / 2019-07-14
+2.0.0 / 2019-07-15
 ------------------
 
-- Change `has_wasm` to support lazy evaluation. This way browser
- will not be tested against wasm support if wasm feature is disabled,
- which prevents CSP report of `unsafe-eval`. #2, #5
+- Change `has_wasm` to support lazy evaluation. This prevents possible browser
+  CSP report when feature is not requested in options, #6.
+- Dev deps bump.
 
 
 1.0.3 / 2018-03-05

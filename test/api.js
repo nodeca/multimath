@@ -4,6 +4,8 @@
 const assert    = require('assert');
 const wa_detect = require('../lib/wa_detect');
 const multimath = require('..');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
 
 describe('Utilities', function () {
 
@@ -54,9 +56,60 @@ describe('Utilities', function () {
   });
 
 
-  it('.init()', function () {
-    // coverage only
-    return multimath().use(require('../lib/unsharp_mask')).init();
+  it('.init() with default options', function () {
+    const hasWebAssembly = sinon.stub().returns(true);
+
+    const multimathMocked = proxyquire('..', {
+      './lib/wa_detect': hasWebAssembly
+    });
+
+    const instance =  multimathMocked();
+
+    const unsharp_mask = require('../lib/unsharp_mask');
+
+    instance.use(unsharp_mask).init();
+
+    assert.equal(instance.unsharp_mask, unsharp_mask.wasm_fn);
+
+    sinon.assert.called(hasWebAssembly);
+  });
+
+
+  it('.init() with default options and not supported wasm', function () {
+    const hasWebAssembly = sinon.stub().returns(false);
+
+    const multimathMocked = proxyquire('..', {
+      './lib/wa_detect': hasWebAssembly
+    });
+
+    const instance =  multimathMocked();
+
+    const unsharp_mask = require('../lib/unsharp_mask');
+
+    instance.use(unsharp_mask).init();
+
+    assert.equal(instance.unsharp_mask, unsharp_mask.fn);
+
+    sinon.assert.called(hasWebAssembly);
+  });
+
+
+  it('.init() with wasm:false', function () {
+    const hasWebAssembly = sinon.stub().returns(true);
+
+    const multimathMocked = proxyquire('..', {
+      './lib/wa_detect': hasWebAssembly
+    });
+
+    const instance = multimathMocked({ wasm: false, js: true });
+
+    const unsharp_mask = require('../lib/unsharp_mask');
+
+    instance.use(unsharp_mask).init();
+
+    assert.equal(instance.unsharp_mask, unsharp_mask.fn);
+
+    sinon.assert.notCalled(hasWebAssembly);
   });
 
 });

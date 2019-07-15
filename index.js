@@ -20,7 +20,6 @@ function MultiMath(options) {
   this.options         = opts;
 
   this.__cache         = {};
-  this.has_wasm        = hasWebAssembly();
 
   this.__init_promise  = null;
   this.__modules       = opts.modules || {};
@@ -35,14 +34,17 @@ function MultiMath(options) {
 }
 
 
+MultiMath.prototype.has_wasm = hasWebAssembly;
+
+
 MultiMath.prototype.use = function (module) {
   this.__modules[module.name] = module;
 
   // Pin the best possible implementation
-  if (!this.has_wasm || !this.options.wasm || !module.wasm_fn) {
-    this[module.name] = module.fn;
-  } else {
+  if (this.options.wasm && this.has_wasm() && module.wasm_fn) {
     this[module.name] = module.wasm_fn;
+  } else {
+    this[module.name] = module.fn;
   }
 
   return this;
@@ -52,7 +54,7 @@ MultiMath.prototype.use = function (module) {
 MultiMath.prototype.init = function () {
   if (this.__init_promise) return this.__init_promise;
 
-  if (!this.options.js && this.options.wasm && !this.has_wasm) {
+  if (!this.options.js && this.options.wasm && !this.has_wasm()) {
     return Promise.reject(new Error('mathlib: only "wasm" was enabled, but it\'s not supported'));
   }
 
@@ -61,7 +63,7 @@ MultiMath.prototype.init = function () {
   this.__init_promise = Promise.all(Object.keys(self.__modules).map(function (name) {
     var module = self.__modules[name];
 
-    if (!self.has_wasm || !self.options.wasm || !module.wasm_fn) return null;
+    if (!self.options.wasm || !self.has_wasm() || !module.wasm_fn) return null;
 
     // If already compiled - exit
     if (self.__wasm[name]) return null;

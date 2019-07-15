@@ -36,11 +36,7 @@ function MultiMath(options) {
 
 
 MultiMath.prototype.has_wasm = function () {
-  if (this.__has_wasm === null) {
-    this.__has_wasm = hasWebAssembly();
-  }
-
-  return this.__has_wasm;
+  return hasWebAssembly();
 };
 
 

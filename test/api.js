@@ -71,7 +71,7 @@ describe('Utilities', function () {
 
     assert.equal(instance.unsharp_mask, unsharp_mask.wasm_fn);
 
-    sinon.assert.callCount(hasWebAssembly, 1);
+    sinon.assert.called(hasWebAssembly);
   });
 
 
@@ -90,7 +90,7 @@ describe('Utilities', function () {
 
     assert.equal(instance.unsharp_mask, unsharp_mask.fn);
 
-    sinon.assert.callCount(hasWebAssembly, 1);
+    sinon.assert.called(hasWebAssembly);
   });
 
 
@@ -109,7 +109,7 @@ describe('Utilities', function () {
 
     assert.equal(instance.unsharp_mask, unsharp_mask.fn);
 
-    sinon.assert.callCount(hasWebAssembly, 0);
+    sinon.assert.notCalled(hasWebAssembly);
   });
 
 });

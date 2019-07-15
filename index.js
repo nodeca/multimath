@@ -20,7 +20,6 @@ function MultiMath(options) {
   this.options         = opts;
 
   this.__cache         = {};
-  this.__has_wasm      = null;
 
   this.__init_promise  = null;
   this.__modules       = opts.modules || {};
@@ -35,9 +34,7 @@ function MultiMath(options) {
 }
 
 
-MultiMath.prototype.has_wasm = function () {
-  return hasWebAssembly();
-};
+MultiMath.prototype.has_wasm = hasWebAssembly;
 
 
 MultiMath.prototype.use = function (module) {

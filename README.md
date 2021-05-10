@@ -102,9 +102,7 @@ browser features and constructor options);
 
 Ways to go with your own modules:
 
-- Use `./support/llvmasm_install.sh` to install llvm/binaryen tools. Or use it
-  as base for your own.
-- See `Makefile`
+- See `package.json`
 - See `./lib/unsharp_mask` as example and... of cause `./index.js`.
 
 Also, see how [pica](https://github.com/nodeca/pica)

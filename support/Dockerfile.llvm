@@ -1,0 +1,7 @@
+FROM ubuntu:20.04
+
+RUN apt-get update
+RUN apt-get install -y llvm-11 clang-11 lld-11 nodejs
+RUN ln -s /usr/bin/wasm-ld-11 /usr/bin/wasm-ld
+
+WORKDIR /src

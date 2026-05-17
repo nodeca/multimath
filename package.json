@@ -30,8 +30,6 @@
     "benchmark": "^2.1.0",
     "eslint": "^9",
     "neostandard": "^0.13.0",
-    "nyc": "^18.0.0",
-    "proxyquire": "^2.1.1",
-    "sinon": "^7.3.2"
+    "nyc": "^18.0.0"
   }
 }

@@ -14,7 +14,7 @@ export interface MultiMathOptions {
 export default class MultiMath {
   constructor(options?: MultiMathOptions)
   has_wasm(): boolean
-  use(module: MultiMathPlugin): this
+  use<T extends MultiMathPlugin>(module: T): this & Record<T['name'], T['fn']>
   init(): Promise<this>
   __memory: WebAssembly.Memory | null
   __reallocate(bytes: number): WebAssembly.Memory

@@ -18,8 +18,10 @@
     "test": "npm run lint && c8 node --test",
     "coverage": "npm run test && c8 report --reporter html"
   },
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "default": "./lib/index.mjs"
     },
     "./package.json": "./package.json"

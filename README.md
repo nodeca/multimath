@@ -1,7 +1,6 @@
 multimath
 =========
 
-[![Build Status](https://travis-ci.org/nodeca/multimath.svg?branch=master)](https://travis-ci.org/nodeca/multimath)
 [![NPM version](https://img.shields.io/npm/v/multimath.svg)](https://www.npmjs.org/package/multimath)
 
 > Core to create fast image math in WebAssembly and JS.
@@ -13,8 +12,8 @@ with fallback to JavaScript implementations.
 - Has built-in helpers to write webassembly code without additional runtimes.
 - Use shared memory to chain webassembly calls without memory copy.
 
-Built-in functions (curently - unsharp mask) are available as examples for your
-extensions.
+Built-in functions (currently - unsharp mask) are available as examples for
+your extensions.
 
 
 Install
@@ -29,18 +28,19 @@ Use
 ---
 
 ```js
-const mm = require('multimath')()
-             .use(require('multimath/lib/unsharp_mask'))
-             .use(require('your_custom_module'))
+import { MultiMath, unsharp_mask_plugin } from 'multimath'
+
+const mm = new MultiMath()
+             .use(unsharp_mask_plugin)
+             .use(your_custom_plugin)
 
 // Simple sync call. Will use sync wasm compile. Ok for webworkers.
 // Can freeze interface at first call if wasm source is too big.
-mm.unsharp_mask(rgba_buffer, width, height);
+mm.unsharp_mask(rgba_buffer, width, height)
 
 // Async init, compile all modules at once in async way.
-mm.init().then(() => {
-  mm.unsharp_mask(rgba_buffer, width, height);
-});
+await mm.init()
+mm.unsharp_mask(rgba_buffer, width, height)
 ```
 
 
@@ -48,68 +48,57 @@ API
 ---
 
 
-### new multimath(options)
+### new MultiMath(options)
 
-Create library instance. Sugar - `multimath()` (without `new`).
+Create library instance.
 
 ```js
-const mm = require('multimath')({
-  // Options are not mandatory, but you can disable js or ww
+const mm = new MultiMath({
+  // Options are not mandatory, but you can disable js or wasm
   // implementations for testing
   js:   true,
   wasm: true
-});
+})
 ```
 
 
-### .use(module)
+### .use(plugin)
 
-Register new module, format is:
+Register new plugin, format is:
 
 ```js
 {
-  name:     String,    // default wasm module & function name to expose
+  name:     String,    // method name to expose on instance
   fn:       Function,  // JS implementation
   wasm_fn:  Function,  // WebAssembly glue
   wasm_src: String     // Base64 encoded WebAssembly module
 }
 ```
 
-See example implementation in `lib/` folder.
+See `lib/unsharp_mask_plugin/` as an example implementation.
 
 
 ### .init() -> Promise
 
-Optional. Compile all wasm modules in async way. May be useful in this cases:
+Optional. Compile all wasm modules asynchronously. Useful when:
 
-1. If you have wasm module > 4K AND run multimath in the main thread (not in
-   webworker). Some browsers prohibit sync wasm creation in this case.
-2. If you have a lot of small modules and wish to init everything before run
-   in the main thread, withoutinterface freeze.
+1. Wasm module > 4K AND running in the main thread (not in a webworker).
+   Some browsers prohibit sync wasm creation in this case.
+2. Many small modules that should all be initialized before first use.
 
-Probably, you will never need to use this method. Note, 3K was file is
-initialized in ~ 3ms.
+Note: a 3K wasm file initializes in ~3ms.
 
 
 ### .<your_method>
 
-All modules, loaded via `.use()`, pin their methods to current `Multimath`
-instance. The best implementation will be selected automatically (depends on
-browser features and constructor options);
+All plugins loaded via `.use()` pin their methods to the `MultiMath` instance.
+The best implementation is selected automatically based on browser features
+and constructor options.
 
 
 ### Development
 
-Ways to go with your own modules:
+Ways to go with your own plugins:
 
-- See `package.json`
-- See `./lib/unsharp_mask` as example and... of cause `./index.js`.
-
-Also, see how [pica](https://github.com/nodeca/pica)
-use this library.
-
-
-Licence
--------
-
-[MIT](https://github.com/nodeca/multimath/blob/master/LICENSE)
+- See `lib/unsharp_mask_plugin/` as an example.
+- See how [pica](https://github.com/nodeca/pica) uses this library.

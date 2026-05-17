@@ -1,3 +1,15 @@
+3.0.0 / 2026-05-17
+------------------
+
+- Migrate to ESM.
+- `MultiMath` converted to ES class, factory call without `new` removed.
+- Built-in unsharp mask exposed as `unsharp_mask_plugin` named export.
+- Replace `object-assign` with native `Object.assign`.
+- Update `glur` to 2.x (ESM, named exports).
+- Switch test runner from mocha to `node:test`.
+- Switch coverage from nyc to c8.
+
+
 2.0.0 / 2019-07-15
 ------------------
 

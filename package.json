@@ -28,8 +28,7 @@
     "lib/"
   ],
   "dependencies": {
-    "glur": "^1.1.2",
-    "object-assign": "^4.1.1"
+    "glur": "^1.1.2"
   },
   "devDependencies": {
     "benchmark": "^2.1.0",

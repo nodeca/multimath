@@ -8,7 +8,7 @@ import glur_mono16 from 'glur/mono16.js'
 
 const require = createRequire(import.meta.url)
 
-const mm_js   = new MultiMath({ js: true, wasm: false }).use(mm_unsharp)
+const mm_js = new MultiMath({ js: true, wasm: false }).use(mm_unsharp)
 const mm_wasm = new MultiMath({ js: false, wasm: true }).use(mm_unsharp)
 
 const sample = {

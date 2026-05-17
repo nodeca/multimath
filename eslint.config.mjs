@@ -4,7 +4,6 @@ export default [
   ...neostandard({
     env: ['browser', 'node'],
     ignores: [
-      'benchmark/**',
       'support/**',
       'coverage/**',
     ]

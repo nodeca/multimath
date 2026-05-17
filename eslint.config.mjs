@@ -14,6 +14,7 @@ export default [
     rules: {
       camelcase: 'off',
       'one-var': 'off',
+      '@stylistic/space-infix-ops': 'off'
     }
   },
 ]

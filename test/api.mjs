@@ -1,9 +1,8 @@
-'use strict'
-
-const { describe, it } = require('node:test')
-const assert = require('assert')
-const wa_detect = require('../lib/wa_detect')
-const multimath = require('..')
+import { describe, it } from 'node:test'
+import assert from 'node:assert'
+import wa_detect from '../lib/wa_detect.mjs'
+import MultiMath from '../index.mjs'
+import unsharp_mask from '../lib/unsharp_mask/index.mjs'
 
 describe('Utilities', function () {
   it('wa_detect', function () {
@@ -14,12 +13,13 @@ describe('Utilities', function () {
 
   it('throws of both js & wasm are disables', function () {
     assert.throws(function () {
-      multimath({ js: false, wasm: false })
+      // eslint-disable-next-line no-new
+      new MultiMath({ js: false, wasm: false })
     })
   })
 
   it('.__align()', function () {
-    const m = multimath()
+    const m = new MultiMath()
 
     assert(m.__align(8), 8)
     assert(m.__align(3, 4), 4)
@@ -29,7 +29,7 @@ describe('Utilities', function () {
   })
 
   it('.__reallocate()', function () {
-    const m = multimath()
+    const m = new MultiMath()
 
     m.__reallocate(1)
     assert.equal(m.__memory.buffer.byteLength, 65536)
@@ -42,17 +42,15 @@ describe('Utilities', function () {
 
   it('.__instance()', function () {
     // coverage only
-    const m = multimath().use(require('../lib/unsharp_mask'))
+    const m = new MultiMath().use(unsharp_mask)
 
     m.__instance('unsharp_mask', 1, { exp: Math.exp })
     m.__instance('unsharp_mask', 1, { exp: Math.exp }) // cached
   })
 
   it('.init() with default options', function () {
-    const instance = multimath()
+    const instance = new MultiMath()
     instance.has_wasm = () => true
-
-    const unsharp_mask = require('../lib/unsharp_mask')
 
     instance.use(unsharp_mask).init()
 
@@ -60,10 +58,8 @@ describe('Utilities', function () {
   })
 
   it('.init() with default options and not supported wasm', function () {
-    const instance = multimath()
+    const instance = new MultiMath()
     instance.has_wasm = () => false
-
-    const unsharp_mask = require('../lib/unsharp_mask')
 
     instance.use(unsharp_mask).init()
 
@@ -71,9 +67,7 @@ describe('Utilities', function () {
   })
 
   it('.init() with wasm:false', function () {
-    const instance = multimath({ wasm: false, js: true })
-
-    const unsharp_mask = require('../lib/unsharp_mask')
+    const instance = new MultiMath({ wasm: false, js: true })
 
     instance.use(unsharp_mask).init()
 

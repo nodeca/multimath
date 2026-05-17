@@ -1,8 +1,9 @@
-'use strict'
-
-const { describe, it } = require('node:test')
-const assert = require('assert')
-const mathlib_raw = require('../')
+import { describe, it } from 'node:test'
+import assert from 'node:assert'
+import MultiMath from '../index.mjs'
+import unsharp_mask from '../lib/unsharp_mask/index.mjs'
+import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
+import glur_js from 'glur/mono16.js'
 
 function fill (target, arr) {
   if (!Array.isArray(arr)) arr = [arr]
@@ -13,8 +14,6 @@ function fill (target, arr) {
 describe('unsharp_mask', function () {
   describe('hsl_l16', function () {
     it('js', function () {
-      const hsl_l16 = require('../lib/unsharp_mask/hsl_l16')
-
       const sample = new Uint8Array(100 * 100 * 4)
 
       fill(sample, [255, 180, 55, 0]) // r, g, b, a
@@ -27,14 +26,14 @@ describe('unsharp_mask', function () {
     })
 
     it('wasm', function () {
-      const mlib_wasm = mathlib_raw({ js: false }).use(require('../lib/unsharp_mask'))
+      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask)
 
       const width = 100, height = 100
       const sample = new Uint8Array(width * height * 4)
 
       fill(sample, [255, 180, 55, 0]) // r, g, b, a
 
-      const result_js = require('../lib/unsharp_mask/hsl_l16')(sample, width, height)
+      const result_js = hsl_l16(sample, width, height)
 
       // Invoke wasm implementation manually
       const pixels = width * height
@@ -61,8 +60,6 @@ describe('unsharp_mask', function () {
 
   describe('glur_mono16', function () {
     it('js', function () {
-      const glur_js = require('glur/mono16')
-
       const sample = new Uint16Array(100 * 100)
 
       fill(sample, 33333)
@@ -75,8 +72,7 @@ describe('unsharp_mask', function () {
     })
 
     it('wasm', function () {
-      const glur_js = require('glur/mono16')
-      const mlib_wasm = mathlib_raw({ js: false }).use(require('../lib/unsharp_mask'))
+      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask)
 
       // unsharp_mask wasm module does not provide API for direct glur16 call
       // Here is simple wrapper for testing
@@ -136,15 +132,15 @@ describe('unsharp_mask', function () {
     }
 
     it('js should not throw without wasm', function () {
-      const mlib = mathlib_raw({ wasm: false }).use(require('../lib/unsharp_mask'))
+      const mlib = new MultiMath({ wasm: false }).use(unsharp_mask)
 
       const sample = createSample(100, 100)
       mlib.unsharp_mask(sample, 100, 100, 80, 2, 2)
     })
 
     it('wasm', function () {
-      const mlib_js = mathlib_raw({ wasm: false }).use(require('../lib/unsharp_mask'))
-      const mlib_wasm = mathlib_raw({ js: false }).use(require('../lib/unsharp_mask'))
+      const mlib_js = new MultiMath({ wasm: false }).use(unsharp_mask)
+      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask)
 
       const sample_js = createSample(100, 100)
       const sample_wasm = createSample(100, 100)

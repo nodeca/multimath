@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
-'use strict'
+import { createRequire } from 'node:module'
+import MultiMath from '../index.mjs'
+import mm_unsharp from '../lib/unsharp_mask/index.mjs'
+import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
+import glur_mono16 from 'glur/mono16.js'
 
-const mm_raw = require('../')
-const mm_unsharp = require('../lib/unsharp_mask')
+const require = createRequire(import.meta.url)
 
-const mm_js = mm_raw({ js: true, wasm: false }).use(mm_unsharp)
-const mm_wasm = mm_raw({ js: false, wasm: true }).use(mm_unsharp)
+const mm_js   = new MultiMath({ js: true, wasm: false }).use(mm_unsharp)
+const mm_wasm = new MultiMath({ js: false, wasm: true }).use(mm_unsharp)
 
 const sample = {
   width: 1024,
@@ -19,8 +22,8 @@ const suite = require('benchmark').Suite()
 suite.add('Init with webassembly modules', {
   defer: true,
   fn: function (defer) {
-    mm_raw({ js: false, wasm: true })
-      .use(require('../lib/unsharp_mask'))
+    new MultiMath({ js: false, wasm: true })
+      .use(mm_unsharp)
       .init()
       .then(function () {
         defer.resolve()
@@ -43,8 +46,6 @@ suite.add('unsharp_mask wasm', {
 })
 
 // //////////////////////////////////////////////////////////////////////////////
-
-const hsl_l16 = require('../lib/unsharp_mask/hsl_l16')
 
 function hsl_l16_wasm_invoke (src, width, height) {
   const pixels = width * height
@@ -81,7 +82,6 @@ suite.add('hsl_l16 wasm', {
 
 // //////////////////////////////////////////////////////////////////////////////
 
-const glur_mono16 = require('glur/mono16')
 const grayscale_sample = new Uint16Array(sample.buffer.length / 2)
 
 function glur16_wasm_invoke (src, width, height, radius) {

@@ -1,8 +1,6 @@
-'use strict'
-
-const assign = require('object-assign')
-const base64decode = require('./lib/base64decode')
-const hasWebAssembly = require('./lib/wa_detect')
+import assign from 'object-assign'
+import base64decode from './lib/base64decode.mjs'
+import hasWebAssembly from './lib/wa_detect.mjs'
 
 const DEFAULT_OPTIONS = {
   js: true,
@@ -142,4 +140,4 @@ MultiMath.prototype.__align = function align (number, base) {
   return number + (reminder ? base - reminder : 0)
 }
 
-module.exports = MultiMath
+export default MultiMath

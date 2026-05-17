@@ -18,9 +18,10 @@
     "test": "npm run lint && nyc node --test",
     "coverage": "npm run test && nyc report --reporter html"
   },
+  "main": "./index.mjs",
   "files": [
     "lib/",
-    "index.js"
+    "index.mjs"
   ],
   "dependencies": {
     "glur": "^1.1.2",

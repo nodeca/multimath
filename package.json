@@ -15,8 +15,8 @@
     "build:emsdk": "docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) emscripten/emsdk:2.0.20 ./support/compile-emsdk.sh",
     "build": "npm run build:emsdk",
     "lint": "eslint .",
-    "test": "npm run lint && nyc node --test",
-    "coverage": "npm run test && nyc report --reporter html"
+    "test": "npm run lint && c8 node --test",
+    "coverage": "npm run test && c8 report --reporter html"
   },
   "exports": {
     ".": {
@@ -34,6 +34,6 @@
     "benchmark": "^2.1.0",
     "eslint": "^9",
     "neostandard": "^0.13.0",
-    "nyc": "^18.0.0"
+    "c8": "^10.0.0"
   }
 }

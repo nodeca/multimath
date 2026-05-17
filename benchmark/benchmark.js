@@ -2,19 +2,19 @@
 
 'use strict'
 
-var mm_raw = require('../')
-var mm_unsharp = require('../lib/unsharp_mask')
+const mm_raw = require('../')
+const mm_unsharp = require('../lib/unsharp_mask')
 
-var mm_js = mm_raw({ js: true, wasm: false }).use(mm_unsharp)
-var mm_wasm = mm_raw({ js: false, wasm: true }).use(mm_unsharp)
+const mm_js = mm_raw({ js: true, wasm: false }).use(mm_unsharp)
+const mm_wasm = mm_raw({ js: false, wasm: true }).use(mm_unsharp)
 
-var sample = {
-  width:  1024,
+const sample = {
+  width: 1024,
   height: 1024
 }
 sample.buffer = new Uint8Array(sample.width * sample.height * 4)
- 
-var suite = require('benchmark').Suite()
+
+const suite = require('benchmark').Suite()
 
 suite.add('Init with webassembly modules', {
   defer: true,
@@ -44,22 +44,22 @@ suite.add('unsharp_mask wasm', {
 
 // //////////////////////////////////////////////////////////////////////////////
 
-var hsl_l16 = require('../lib/unsharp_mask/hsl_l16')
+const hsl_l16 = require('../lib/unsharp_mask/hsl_l16')
 
 function hsl_l16_wasm_invoke (src, width, height) {
-  var pixels = width * height
-  var res_offset = pixels * 4
+  const pixels = width * height
+  const res_offset = pixels * 4
 
-  var instance = mm_wasm.__instance(
+  const instance = mm_wasm.__instance(
     'unsharp_mask',
     pixels * 4 + pixels * 2,
     { exp: Math.exp }
   )
 
-  var mem = new Uint8Array(mm_wasm.__memory.buffer)
+  const mem = new Uint8Array(mm_wasm.__memory.buffer)
   mem.set(sample)
 
-  var fn = instance.exports.hsl_l16 || instance.exports._hsl_l16
+  const fn = instance.exports.hsl_l16 || instance.exports._hsl_l16
 
   fn(0, res_offset, width, height)
 
@@ -81,36 +81,36 @@ suite.add('hsl_l16 wasm', {
 
 // //////////////////////////////////////////////////////////////////////////////
 
-var glur_mono16 = require('glur/mono16')
-var grayscale_sample = new Uint16Array(sample.buffer.length / 2)
+const glur_mono16 = require('glur/mono16')
+const grayscale_sample = new Uint16Array(sample.buffer.length / 2)
 
 function glur16_wasm_invoke (src, width, height, radius) {
   // src = grayscale, 16 bits
-  var pixels = width * height
+  const pixels = width * height
 
-  var src_byte_cnt = pixels * 2
-  var out_byte_cnt = pixels * 2
-  var tmp_byte_cnt = pixels * 2
+  const src_byte_cnt = pixels * 2
+  const out_byte_cnt = pixels * 2
+  const tmp_byte_cnt = pixels * 2
 
-  var line_byte_cnt = Math.max(width, height) * 4 // float32 array
-  var coeffs_byte_cnt = 8 * 4
+  const line_byte_cnt = Math.max(width, height) * 4 // float32 array
+  const coeffs_byte_cnt = 8 * 4
 
-  var src_offset = 0
-  var out_offset = src_offset + src_byte_cnt
-  var tmp_offset = out_offset + out_byte_cnt
-  var line_offset = tmp_offset + tmp_byte_cnt
-  var coeffs_offset = line_offset + line_byte_cnt
+  const src_offset = 0
+  const out_offset = src_offset + src_byte_cnt
+  const tmp_offset = out_offset + out_byte_cnt
+  const line_offset = tmp_offset + tmp_byte_cnt
+  const coeffs_offset = line_offset + line_byte_cnt
 
-  var instance = mm_wasm.__instance(
+  const instance = mm_wasm.__instance(
     'unsharp_mask',
     coeffs_offset + coeffs_byte_cnt,
     { exp: Math.exp }
   )
 
-  var mem32 = new Uint16Array(mm_wasm.__memory.buffer)
+  const mem32 = new Uint16Array(mm_wasm.__memory.buffer)
   mem32.set(src)
 
-  var fn = instance.exports.blurMono16 || instance.exports._blurMono16
+  const fn = instance.exports.blurMono16 || instance.exports._blurMono16
 
   fn(src_offset, out_offset, tmp_offset, line_offset, coeffs_offset, width, height, radius)
 

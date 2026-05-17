@@ -7,7 +7,6 @@ const proxyquire = require('proxyquire')
 const sinon = require('sinon')
 
 describe('Utilities', function () {
-
   it('wa_detect', function () {
     assert.equal(wa_detect(), true)
     // for coverage
@@ -21,7 +20,7 @@ describe('Utilities', function () {
   })
 
   it('.__align()', function () {
-    var m = multimath()
+    const m = multimath()
 
     assert(m.__align(8), 8)
     assert(m.__align(3, 4), 4)
@@ -31,7 +30,7 @@ describe('Utilities', function () {
   })
 
   it('.__reallocate()', function () {
-    var m = multimath()
+    const m = multimath()
 
     m.__reallocate(1)
     assert.equal(m.__memory.buffer.byteLength, 65536)
@@ -44,7 +43,7 @@ describe('Utilities', function () {
 
   it('.__instance()', function () {
     // coverage only
-    var m = multimath().use(require('../lib/unsharp_mask'))
+    const m = multimath().use(require('../lib/unsharp_mask'))
 
     m.__instance('unsharp_mask', 1, { exp: Math.exp })
     m.__instance('unsharp_mask', 1, { exp: Math.exp }) // cached
@@ -103,5 +102,4 @@ describe('Utilities', function () {
 
     sinon.assert.notCalled(hasWebAssembly)
   })
-
 })

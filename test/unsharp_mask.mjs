@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { MultiMath, unsharp_mask_plugin } from '../lib/index.mjs'
-import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
+import hsl_l16 from '../lib/unsharp_mask_plugin/hsl_l16.mjs'
 import { blurMono16 } from 'glur'
 
 function fill (target, arr) {

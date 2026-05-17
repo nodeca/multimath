@@ -1,5 +1,6 @@
 'use strict'
 
+const { describe, it } = require('node:test')
 const assert = require('assert')
 const wa_detect = require('../lib/wa_detect')
 const multimath = require('..')

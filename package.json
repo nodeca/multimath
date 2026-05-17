@@ -14,7 +14,8 @@
     "build:llvm": "docker build -t multimath_llvm -f ./support/Dockerfile.llvm ./support && docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) multimath_llvm ./support/compile-llvm.sh",
     "build:emsdk": "docker run --rm -v $(pwd):/src -u $(id -u):$(id -g) emscripten/emsdk:2.0.20 ./support/compile-emsdk.sh",
     "build": "npm run build:emsdk",
-    "test": "eslint . && mocha",
+    "lint": "eslint .",
+    "test": "npm run lint && mocha",
     "coverage": "nyc mocha && nyc report --reporter html"
   },
   "files": [
@@ -27,8 +28,9 @@
   },
   "devDependencies": {
     "benchmark": "^2.1.0",
-    "eslint": "^6.0.1",
+    "eslint": "^9",
     "mocha": "^6.1.4",
+    "neostandard": "^0.13.0",
     "nyc": "^14.1.1",
     "proxyquire": "^2.1.1",
     "sinon": "^7.3.2"

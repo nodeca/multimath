@@ -3,7 +3,7 @@
 import { createRequire } from 'node:module'
 import { MultiMath, unsharp_mask_plugin } from '../lib/index.mjs'
 import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
-import glur_mono16 from 'glur/mono16.js'
+import { blurMono16 } from 'glur'
 
 const require = createRequire(import.meta.url)
 
@@ -119,7 +119,7 @@ function glur16_wasm_invoke (src, width, height, radius) {
 
 suite.add('glur_mono16 js', {
   fn: function () {
-    glur_mono16(grayscale_sample, sample.width, sample.height, 1.5)
+    blurMono16(grayscale_sample, sample.width, sample.height, 1.5)
   }
 })
 

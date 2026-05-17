@@ -2,7 +2,7 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import { MultiMath, unsharp_mask_plugin } from '../lib/index.mjs'
 import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
-import glur_js from 'glur/mono16.js'
+import { blurMono16 } from 'glur'
 
 function fill (target, arr) {
   if (!Array.isArray(arr)) arr = [arr]
@@ -65,7 +65,7 @@ describe('unsharp_mask', function () {
 
       const orig = sample.slice(0, sample.length)
 
-      glur_js(sample, 100, 100, 2)
+      blurMono16(sample, 100, 100, 2)
 
       assert.deepEqual(sample, orig)
     })
@@ -113,7 +113,7 @@ describe('unsharp_mask', function () {
 
       const sample_js = sample.slice(0, sample.length)
 
-      glur_js(sample_js, 100, 100, 2)
+      blurMono16(sample_js, 100, 100, 2)
 
       const sample_wasm = glur16_wasm_invoke(mlib_wasm, sample, 100, 100, 2)
 

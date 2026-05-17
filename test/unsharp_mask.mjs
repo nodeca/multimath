@@ -1,7 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
-import MultiMath from '../index.mjs'
-import unsharp_mask from '../lib/unsharp_mask/index.mjs'
+import { MultiMath, unsharp_mask_plugin } from '../lib/index.mjs'
 import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
 import glur_js from 'glur/mono16.js'
 
@@ -26,7 +25,7 @@ describe('unsharp_mask', function () {
     })
 
     it('wasm', function () {
-      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask)
+      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask_plugin)
 
       const width = 100, height = 100
       const sample = new Uint8Array(width * height * 4)
@@ -72,9 +71,9 @@ describe('unsharp_mask', function () {
     })
 
     it('wasm', function () {
-      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask)
+      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask_plugin)
 
-      // unsharp_mask wasm module does not provide API for direct glur16 call
+      // unsharp_mask_plugin wasm module does not provide API for direct glur16 call
       // Here is simple wrapper for testing
       function glur16_wasm_invoke (thisobj, src, width, height, radius) {
         // src = grayscale, 16 bits
@@ -132,15 +131,15 @@ describe('unsharp_mask', function () {
     }
 
     it('js should not throw without wasm', function () {
-      const mlib = new MultiMath({ wasm: false }).use(unsharp_mask)
+      const mlib = new MultiMath({ wasm: false }).use(unsharp_mask_plugin)
 
       const sample = createSample(100, 100)
       mlib.unsharp_mask(sample, 100, 100, 80, 2, 2)
     })
 
     it('wasm', function () {
-      const mlib_js = new MultiMath({ wasm: false }).use(unsharp_mask)
-      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask)
+      const mlib_js = new MultiMath({ wasm: false }).use(unsharp_mask_plugin)
+      const mlib_wasm = new MultiMath({ js: false }).use(unsharp_mask_plugin)
 
       const sample_js = createSample(100, 100)
       const sample_wasm = createSample(100, 100)

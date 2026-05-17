@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 
 import { createRequire } from 'node:module'
-import MultiMath from '../index.mjs'
-import mm_unsharp from '../lib/unsharp_mask/index.mjs'
+import { MultiMath, unsharp_mask_plugin } from '../lib/index.mjs'
 import hsl_l16 from '../lib/unsharp_mask/hsl_l16.mjs'
 import glur_mono16 from 'glur/mono16.js'
 
 const require = createRequire(import.meta.url)
 
-const mm_js = new MultiMath({ js: true, wasm: false }).use(mm_unsharp)
-const mm_wasm = new MultiMath({ js: false, wasm: true }).use(mm_unsharp)
+const mm_js = new MultiMath({ js: true, wasm: false }).use(unsharp_mask_plugin)
+const mm_wasm = new MultiMath({ js: false, wasm: true }).use(unsharp_mask_plugin)
 
 const sample = {
   width: 1024,
@@ -23,7 +22,7 @@ suite.add('Init with webassembly modules', {
   defer: true,
   fn: function (defer) {
     new MultiMath({ js: false, wasm: true })
-      .use(mm_unsharp)
+      .use(unsharp_mask_plugin)
       .init()
       .then(function () {
         defer.resolve()
@@ -33,13 +32,13 @@ suite.add('Init with webassembly modules', {
 
 // //////////////////////////////////////////////////////////////////////////////
 
-suite.add('unsharp_mask js', {
+suite.add('unsharp_mask_plugin js', {
   fn: function () {
     mm_js.unsharp_mask(sample.buffer, sample.width, sample.height, 80, 0.6, 2)
   }
 })
 
-suite.add('unsharp_mask wasm', {
+suite.add('unsharp_mask_plugin wasm', {
   fn: function () {
     mm_wasm.unsharp_mask(sample.buffer, sample.width, sample.height, 80, 0.6, 2)
   }

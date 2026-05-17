@@ -1,8 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert'
 import wa_detect from '../lib/wa_detect.mjs'
-import MultiMath from '../index.mjs'
-import unsharp_mask from '../lib/unsharp_mask/index.mjs'
+import { MultiMath, unsharp_mask_plugin } from '../lib/index.mjs'
 
 describe('Utilities', function () {
   it('wa_detect', function () {
@@ -42,7 +41,7 @@ describe('Utilities', function () {
 
   it('.__instance()', function () {
     // coverage only
-    const m = new MultiMath().use(unsharp_mask)
+    const m = new MultiMath().use(unsharp_mask_plugin)
 
     m.__instance('unsharp_mask', 1, { exp: Math.exp })
     m.__instance('unsharp_mask', 1, { exp: Math.exp }) // cached
@@ -52,25 +51,25 @@ describe('Utilities', function () {
     const instance = new MultiMath()
     instance.has_wasm = () => true
 
-    instance.use(unsharp_mask).init()
+    instance.use(unsharp_mask_plugin).init()
 
-    assert.equal(instance.unsharp_mask, unsharp_mask.wasm_fn)
+    assert.equal(instance.unsharp_mask, unsharp_mask_plugin.wasm_fn)
   })
 
   it('.init() with default options and not supported wasm', function () {
     const instance = new MultiMath()
     instance.has_wasm = () => false
 
-    instance.use(unsharp_mask).init()
+    instance.use(unsharp_mask_plugin).init()
 
-    assert.equal(instance.unsharp_mask, unsharp_mask.fn)
+    assert.equal(instance.unsharp_mask, unsharp_mask_plugin.fn)
   })
 
   it('.init() with wasm:false', function () {
     const instance = new MultiMath({ wasm: false, js: true })
 
-    instance.use(unsharp_mask).init()
+    instance.use(unsharp_mask_plugin).init()
 
-    assert.equal(instance.unsharp_mask, unsharp_mask.fn)
+    assert.equal(instance.unsharp_mask, unsharp_mask_plugin.fn)
   })
 })
